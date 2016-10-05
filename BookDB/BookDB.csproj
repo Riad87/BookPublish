@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{319E9569-56E2-4A5D-9E65-AF1DB89FDB87}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BookDB</RootNamespace>
+    <AssemblyName>BookDB</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DBModel\AccountType.cs" />
+    <Compile Include="DBModel\Author.cs" />
+    <Compile Include="DBModel\BookContext.cs" />
+    <Compile Include="DBModel\BookRepository.cs" />
+    <Compile Include="DBModel\Books.cs" />
+    <Compile Include="DBModel\Cover.cs" />
+    <Compile Include="DBModel\Depot.cs" />
+    <Compile Include="DBModel\Depot_type.cs" />
+    <Compile Include="DBModel\Partner.cs" />
+    <Compile Include="DBModel\Press.cs" />
+    <Compile Include="DBModel\Pressure.cs" />
+    <Compile Include="DBModel\Stockist_margin.cs" />
+    <Compile Include="DBModel\Theme.cs" />
+    <Compile Include="Migrations\201603292021416_DBCreate.cs" />
+    <Compile Include="Migrations\201603292021416_DBCreate.Designer.cs">
+      <DependentUpon>201603292021416_DBCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603292049521_RemoveParnerColum_PRess.cs" />
+    <Compile Include="Migrations\201603292049521_RemoveParnerColum_PRess.Designer.cs">
+      <DependentUpon>201603292049521_RemoveParnerColum_PRess.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603292051288_RenameActiveColum.cs" />
+    <Compile Include="Migrations\201603292051288_RenameActiveColum.Designer.cs">
+      <DependentUpon>201603292051288_RenameActiveColum.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603292238081_MarginAddCol.cs" />
+    <Compile Include="Migrations\201603292238081_MarginAddCol.Designer.cs">
+      <DependentUpon>201603292238081_MarginAddCol.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603301220211_MarginNameRemove.cs" />
+    <Compile Include="Migrations\201603301220211_MarginNameRemove.Designer.cs">
+      <DependentUpon>201603301220211_MarginNameRemove.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603302001567_DepotNameRemove.cs" />
+    <Compile Include="Migrations\201603302001567_DepotNameRemove.Designer.cs">
+      <DependentUpon>201603302001567_DepotNameRemove.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604021138213_AuthorsColumRename.cs" />
+    <Compile Include="Migrations\201604021138213_AuthorsColumRename.Designer.cs">
+      <DependentUpon>201604021138213_AuthorsColumRename.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201609031601031_acitve-bool.cs" />
+    <Compile Include="Migrations\201609031601031_acitve-bool.Designer.cs">
+      <DependentUpon>201609031601031_acitve-bool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201609292039022_author_isdeleted.cs" />
+    <Compile Include="Migrations\201609292039022_author_isdeleted.Designer.cs">
+      <DependentUpon>201609292039022_author_isdeleted.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201603292021416_DBCreate.resx">
+      <DependentUpon>201603292021416_DBCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603292049521_RemoveParnerColum_PRess.resx">
+      <DependentUpon>201603292049521_RemoveParnerColum_PRess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603292051288_RenameActiveColum.resx">
+      <DependentUpon>201603292051288_RenameActiveColum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603292238081_MarginAddCol.resx">
+      <DependentUpon>201603292238081_MarginAddCol.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603301220211_MarginNameRemove.resx">
+      <DependentUpon>201603301220211_MarginNameRemove.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603302001567_DepotNameRemove.resx">
+      <DependentUpon>201603302001567_DepotNameRemove.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604021138213_AuthorsColumRename.resx">
+      <DependentUpon>201604021138213_AuthorsColumRename.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201609031601031_acitve-bool.resx">
+      <DependentUpon>201609031601031_acitve-bool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201609292039022_author_isdeleted.resx">
+      <DependentUpon>201609292039022_author_isdeleted.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

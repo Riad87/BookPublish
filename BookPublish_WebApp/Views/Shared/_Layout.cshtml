@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - </title>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/modernizr")
+    @using System.Configuration;
+   
+    <meta name="description" content="The description of my page" />
+</head>
+<body>
+    @if (Request.IsAuthenticated)
+    {
+        <nav class="navbar navbar-inverse">
+            <div id="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li class="active">@Html.ActionLink("Kezdőlap", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Rólunk", "About", "Home")</li>
+                    <li>@Html.ActionLink("Kapcsolat", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Szerzők", "Index", "Authors")</li>
+                    <li>@Html.ActionLink("Könyvek", "Index", "Books")</li>
+                    @if (ConfigurationManager.AppSettings["Admin"].Equals(User.Identity.Name))
+                    {
+                        <li>
+                            <div class="dropdown">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownmenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    Adminisztáció
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownmenu1">
+                                    <li>@Html.ActionLink("Könyvek", "Index", "Books")</li>
+                                    <li>@Html.ActionLink("Szerzők", "Index", "Authors")</li>
+                                    <li>@Html.ActionLink("Raktár típusok", "Index", "Depot_type")</li>
+                                    <li>@Html.ActionLink("Raktárok","Index","Depots")</li>
+                                    <li>@Html.ActionLink("Nyomdák","Index","Presses")</li>
+                                    <li>@Html.ActionLink("Fedél típusok","Index","Covers")</li>
+                                    <li>@Html.ActionLink("Partnerek","Index","Presses")</li>
+                                    <li>@Html.ActionLink("Nyomások","Index","Pressure")</li>
+                                    <li>@Html.ActionLink("Árrés","Index","Stockist_margin")</li>
+                                    <li>@Html.ActionLink("Könyv témák","Index","Themes")</li>
+                                    <li role="separator" class="divider"></li>
+                                    <li>Felhasználó adminisztáció</li>
+                                </ul>
+                            </div>
+                        </li>
+
+                    }
+                    <li class="nav navbar-right">@Html.Partial("_LoginPartial")</li>
+                </ul>
+
+
+            </div>
+        </nav>
+
+
+    }
+    else
+    {
+        /* @Html.Partial("_LoginPartial")*/
+    }
+<div class="container">
+    @RenderBody()
+    
+    <div id="footer" class="container-fluid">
+        <footer class="navbar navbar-inverse navbar-fixed-bottom">
+            <h4 class="text-center text-info">&copy; @DateTime.Now.Year - Könyvkiadás</h4>
+        </footer>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@RenderSection("scripts", required: false)
+</body>
+</html>

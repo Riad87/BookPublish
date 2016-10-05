@@ -1,0 +1,30 @@
+﻿@{
+    string current = Convert.ToString(HttpContext.Current.Request.IsAuthenticated);
+    string req = Convert.ToString(HttpContext.Current.Request.RawUrl);
+
+    //switch (current)
+    //{
+    //    case "True":
+    //        Layout = "~/Views/Shared/_Layout.cshtml";
+    //        break;
+    //    default:
+    //        Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    //        break;
+    //}
+    if (current == "False" && req == "/Account/Login")
+    {
+        Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    }
+    if (current == "False" && req == "/")
+    {
+        Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    }
+    else if (current == "True" && req == "/Account/Login")
+    {
+        Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}

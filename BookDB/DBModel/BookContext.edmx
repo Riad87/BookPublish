@@ -1,0 +1,712 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Edmx Version="3.0" xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <Runtime>
+    <ConceptualModels>
+      <Schema Namespace="bookPublishDB" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Author" customannotation:ClrType="bookPublishDB.Author, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AuthorName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Book" Relationship="Self.Author_Book" FromRole="Author_Book_Source" ToRole="Author_Book_Target" />
+        </EntityType>
+        <EntityType Name="Books" customannotation:ClrType="bookPublishDB.Books, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ISBN" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ItemNumber" Type="Int32" Nullable="false" />
+          <Property Name="NetValue" Type="Int32" Nullable="false" />
+          <Property Name="Vat" Type="Int32" Nullable="false" />
+          <Property Name="GrossValue" Type="Int32" Nullable="false" />
+          <Property Name="ValidFrom" Type="DateTime" Nullable="false" />
+          <Property Name="ValidTo" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Author" Relationship="Self.Author_Book" FromRole="Author_Book_Target" ToRole="Author_Book_Source" />
+          <NavigationProperty Name="Cover" Relationship="Self.Cover_Book" FromRole="Cover_Book_Target" ToRole="Cover_Book_Source" />
+          <NavigationProperty Name="Depot" Relationship="Self.Books_Depot" FromRole="Books_Depot_Source" ToRole="Books_Depot_Target" />
+          <NavigationProperty Name="Theme" Relationship="Self.Theme_Book" FromRole="Theme_Book_Target" ToRole="Theme_Book_Source" />
+        </EntityType>
+        <EntityType Name="Cover" customannotation:ClrType="bookPublishDB.Cover, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CoverName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Book" Relationship="Self.Cover_Book" FromRole="Cover_Book_Source" ToRole="Cover_Book_Target" />
+        </EntityType>
+        <EntityType Name="Depot" customannotation:ClrType="bookPublishDB.Depot, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DepotName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Zip" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Type" Relationship="Self.Depot_Type" FromRole="Depot_Type_Source" ToRole="Depot_Type_Target" />
+        </EntityType>
+        <EntityType Name="Depot_type" customannotation:ClrType="bookPublishDB.Depot_type, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Theme" customannotation:ClrType="bookPublishDB.Theme, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="ThemeName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Book" Relationship="Self.Theme_Book" FromRole="Theme_Book_Source" ToRole="Theme_Book_Target" />
+        </EntityType>
+        <EntityType Name="Partner" customannotation:ClrType="bookPublishDB.Partner, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AccountType" Relationship="Self.Partner_AccountType" FromRole="Partner_AccountType_Source" ToRole="Partner_AccountType_Target" />
+          <NavigationProperty Name="Depot" Relationship="Self.Partner_Depot" FromRole="Partner_Depot_Source" ToRole="Partner_Depot_Target" />
+        </EntityType>
+        <EntityType Name="AccountType" customannotation:ClrType="bookPublishDB.AccountType, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Details" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Press" customannotation:ClrType="bookPublishDB.Press, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Partner" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Zip" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Country" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Acitve" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Pressure" Relationship="Self.Press_Pressure" FromRole="Press_Pressure_Source" ToRole="Press_Pressure_Target" />
+        </EntityType>
+        <EntityType Name="Pressure" customannotation:ClrType="bookPublishDB.Pressure, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemNumber" Type="Int32" Nullable="false" />
+          <Property Name="OrderDate" Type="DateTime" Nullable="false" />
+          <Property Name="AfterPressure" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Press" Relationship="Self.Press_Pressure" FromRole="Press_Pressure_Target" ToRole="Press_Pressure_Source" />
+        </EntityType>
+        <EntityType Name="Stockist_margin" customannotation:ClrType="bookPublishDB.Stockist_margin, BookDB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Discount" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Depot" Relationship="Self.Stockist_margin_Depot" FromRole="Stockist_margin_Depot_Source" ToRole="Stockist_margin_Depot_Target" />
+        </EntityType>
+        <Association Name="Cover_Book">
+          <End Role="Cover_Book_Source" Type="Self.Cover" Multiplicity="*" />
+          <End Role="Cover_Book_Target" Type="Self.Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+        </Association>
+        <Association Name="Depot_Type">
+          <End Role="Depot_Type_Source" Type="Self.Depot" Multiplicity="*" />
+          <End Role="Depot_Type_Target" Type="Self.Depot_type" Multiplicity="0..1" />
+        </Association>
+        <Association Name="Books_Depot">
+          <End Role="Books_Depot_Source" Type="Self.Books" Multiplicity="0..1" />
+          <End Role="Books_Depot_Target" Type="Self.Depot" Multiplicity="*" />
+        </Association>
+        <Association Name="Theme_Book">
+          <End Role="Theme_Book_Source" Type="Self.Theme" Multiplicity="0..1" />
+          <End Role="Theme_Book_Target" Type="Self.Books" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="Theme_Book_Target">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Theme_Book_Source">
+              <PropertyRef Name="ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Author_Book">
+          <End Role="Author_Book_Source" Type="Self.Author" Multiplicity="*" />
+          <End Role="Author_Book_Target" Type="Self.Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+        </Association>
+        <Association Name="Partner_AccountType">
+          <End Role="Partner_AccountType_Source" Type="Self.Partner" Multiplicity="0..1" />
+          <End Role="Partner_AccountType_Target" Type="Self.AccountType" Multiplicity="*" />
+        </Association>
+        <Association Name="Partner_Depot">
+          <End Role="Partner_Depot_Source" Type="Self.Partner" Multiplicity="0..1" />
+          <End Role="Partner_Depot_Target" Type="Self.Depot" Multiplicity="*" />
+        </Association>
+        <Association Name="Press_Pressure">
+          <End Role="Press_Pressure_Source" Type="Self.Press" Multiplicity="*" />
+          <End Role="Press_Pressure_Target" Type="Self.Pressure" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+        </Association>
+        <Association Name="Stockist_margin_Depot">
+          <End Role="Stockist_margin_Depot_Source" Type="Self.Stockist_margin" Multiplicity="0..1" />
+          <End Role="Stockist_margin_Depot_Target" Type="Self.Depot" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="BookContext" customannotation:UseClrTypes="true">
+          <EntitySet Name="Authors" EntityType="Self.Author" />
+          <EntitySet Name="Books" EntityType="Self.Books" />
+          <EntitySet Name="Covers" EntityType="Self.Cover" />
+          <EntitySet Name="Depots" EntityType="Self.Depot" />
+          <EntitySet Name="Depot_types" EntityType="Self.Depot_type" />
+          <EntitySet Name="Themes" EntityType="Self.Theme" />
+          <EntitySet Name="Partners" EntityType="Self.Partner" />
+          <EntitySet Name="AccountTypes" EntityType="Self.AccountType" />
+          <EntitySet Name="Presses" EntityType="Self.Press" />
+          <EntitySet Name="Pressure" EntityType="Self.Pressure" />
+          <EntitySet Name="Stockist_margin" EntityType="Self.Stockist_margin" />
+          <AssociationSet Name="Cover_Book" Association="Self.Cover_Book">
+            <End Role="Cover_Book_Source" EntitySet="Covers" />
+            <End Role="Cover_Book_Target" EntitySet="Books" />
+          </AssociationSet>
+          <AssociationSet Name="Depot_Type" Association="Self.Depot_Type">
+            <End Role="Depot_Type_Source" EntitySet="Depots" />
+            <End Role="Depot_Type_Target" EntitySet="Depot_types" />
+          </AssociationSet>
+          <AssociationSet Name="Books_Depot" Association="Self.Books_Depot">
+            <End Role="Books_Depot_Source" EntitySet="Books" />
+            <End Role="Books_Depot_Target" EntitySet="Depots" />
+          </AssociationSet>
+          <AssociationSet Name="Theme_Book" Association="Self.Theme_Book">
+            <End Role="Theme_Book_Source" EntitySet="Themes" />
+            <End Role="Theme_Book_Target" EntitySet="Books" />
+          </AssociationSet>
+          <AssociationSet Name="Author_Book" Association="Self.Author_Book">
+            <End Role="Author_Book_Source" EntitySet="Authors" />
+            <End Role="Author_Book_Target" EntitySet="Books" />
+          </AssociationSet>
+          <AssociationSet Name="Partner_AccountType" Association="Self.Partner_AccountType">
+            <End Role="Partner_AccountType_Source" EntitySet="Partners" />
+            <End Role="Partner_AccountType_Target" EntitySet="AccountTypes" />
+          </AssociationSet>
+          <AssociationSet Name="Partner_Depot" Association="Self.Partner_Depot">
+            <End Role="Partner_Depot_Source" EntitySet="Partners" />
+            <End Role="Partner_Depot_Target" EntitySet="Depots" />
+          </AssociationSet>
+          <AssociationSet Name="Press_Pressure" Association="Self.Press_Pressure">
+            <End Role="Press_Pressure_Source" EntitySet="Presses" />
+            <End Role="Press_Pressure_Target" EntitySet="Pressure" />
+          </AssociationSet>
+          <AssociationSet Name="Stockist_margin_Depot" Association="Self.Stockist_margin_Depot">
+            <End Role="Stockist_margin_Depot_Source" EntitySet="Stockist_margin" />
+            <End Role="Stockist_margin_Depot_Target" EntitySet="Depots" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </ConceptualModels>
+    <Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CodeFirstDatabase" CdmEntityContainer="BookContext">
+          <EntitySetMapping Name="Authors">
+            <EntityTypeMapping TypeName="bookPublishDB.Author">
+              <MappingFragment StoreEntitySet="Author">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="AuthorName" ColumnName="AuthorName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Books">
+            <EntityTypeMapping TypeName="bookPublishDB.Books">
+              <MappingFragment StoreEntitySet="Books">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="ISBN" ColumnName="ISBN" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ItemNumber" ColumnName="ItemNumber" />
+                <ScalarProperty Name="NetValue" ColumnName="NetValue" />
+                <ScalarProperty Name="Vat" ColumnName="Vat" />
+                <ScalarProperty Name="GrossValue" ColumnName="GrossValue" />
+                <ScalarProperty Name="ValidFrom" ColumnName="ValidFrom" />
+                <ScalarProperty Name="ValidTo" ColumnName="ValidTo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Covers">
+            <EntityTypeMapping TypeName="bookPublishDB.Cover">
+              <MappingFragment StoreEntitySet="Cover">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="CoverName" ColumnName="CoverName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Depots">
+            <EntityTypeMapping TypeName="bookPublishDB.Depot">
+              <MappingFragment StoreEntitySet="Depot">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="DepotName" ColumnName="DepotName" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Zip" ColumnName="Zip" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Depot_types">
+            <EntityTypeMapping TypeName="bookPublishDB.Depot_type">
+              <MappingFragment StoreEntitySet="Depot_type">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Themes">
+            <EntityTypeMapping TypeName="bookPublishDB.Theme">
+              <MappingFragment StoreEntitySet="Theme">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="ThemeName" ColumnName="ThemeName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Partners">
+            <EntityTypeMapping TypeName="bookPublishDB.Partner">
+              <MappingFragment StoreEntitySet="Partner">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AccountTypes">
+            <EntityTypeMapping TypeName="bookPublishDB.AccountType">
+              <MappingFragment StoreEntitySet="AccountType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Details" ColumnName="Details" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Presses">
+            <EntityTypeMapping TypeName="bookPublishDB.Press">
+              <MappingFragment StoreEntitySet="Press">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Partner" ColumnName="Partner" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Zip" ColumnName="Zip" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="Acitve" ColumnName="Acitve" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Pressure">
+            <EntityTypeMapping TypeName="bookPublishDB.Pressure">
+              <MappingFragment StoreEntitySet="Pressure">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="ItemNumber" ColumnName="ItemNumber" />
+                <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
+                <ScalarProperty Name="AfterPressure" ColumnName="AfterPressure" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stockist_margin">
+            <EntityTypeMapping TypeName="bookPublishDB.Stockist_margin">
+              <MappingFragment StoreEntitySet="Stockist_margin">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="Cover_Book" TypeName="bookPublishDB.Cover_Book" StoreEntitySet="Cover">
+            <EndProperty Name="Cover_Book_Target">
+              <ScalarProperty Name="ID" ColumnName="Book_ID" />
+            </EndProperty>
+            <EndProperty Name="Cover_Book_Source">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="Depot_Type" TypeName="bookPublishDB.Depot_Type" StoreEntitySet="Depot">
+            <EndProperty Name="Depot_Type_Target">
+              <ScalarProperty Name="ID" ColumnName="Type_ID" />
+            </EndProperty>
+            <EndProperty Name="Depot_Type_Source">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="Type_ID" />
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="Books_Depot" TypeName="bookPublishDB.Books_Depot" StoreEntitySet="Depot">
+            <EndProperty Name="Books_Depot_Source">
+              <ScalarProperty Name="ID" ColumnName="Books_ID" />
+            </EndProperty>
+            <EndProperty Name="Books_Depot_Target">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="Books_ID" />
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="Author_Book" TypeName="bookPublishDB.Author_Book" StoreEntitySet="Author">
+            <EndProperty Name="Author_Book_Target">
+              <ScalarProperty Name="ID" ColumnName="Book_ID" />
+            </EndProperty>
+            <EndProperty Name="Author_Book_Source">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="Partner_AccountType" TypeName="bookPublishDB.Partner_AccountType" StoreEntitySet="AccountType">
+            <EndProperty Name="Partner_AccountType_Source">
+              <ScalarProperty Name="ID" ColumnName="Partner_ID" />
+            </EndProperty>
+            <EndProperty Name="Partner_AccountType_Target">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="Partner_ID" />
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="Partner_Depot" TypeName="bookPublishDB.Partner_Depot" StoreEntitySet="Depot">
+            <EndProperty Name="Partner_Depot_Source">
+              <ScalarProperty Name="ID" ColumnName="Partner_ID" />
+            </EndProperty>
+            <EndProperty Name="Partner_Depot_Target">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="Partner_ID" />
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="Press_Pressure" TypeName="bookPublishDB.Press_Pressure" StoreEntitySet="Press">
+            <EndProperty Name="Press_Pressure_Target">
+              <ScalarProperty Name="ID" ColumnName="Pressure_ID" />
+            </EndProperty>
+            <EndProperty Name="Press_Pressure_Source">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="Stockist_margin_Depot" TypeName="bookPublishDB.Stockist_margin_Depot" StoreEntitySet="Depot">
+            <EndProperty Name="Stockist_margin_Depot_Source">
+              <ScalarProperty Name="ID" ColumnName="Stockist_margin_ID" />
+            </EndProperty>
+            <EndProperty Name="Stockist_margin_Depot_Target">
+              <ScalarProperty Name="ID" ColumnName="ID" />
+            </EndProperty>
+            <Condition IsNull="false" ColumnName="Stockist_margin_ID" />
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </Mappings>
+    <StorageModels>
+      <Schema Namespace="CodeFirstDatabaseSchema" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Author">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AuthorName" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Book_ID" Type="int" customannotation:Index="{ Name: IX_Book_ID, Order: 0 }" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Books">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ISBN" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="ItemNumber" Type="int" Nullable="false" />
+          <Property Name="NetValue" Type="int" Nullable="false" />
+          <Property Name="Vat" Type="int" Nullable="false" />
+          <Property Name="GrossValue" Type="int" Nullable="false" />
+          <Property Name="ValidFrom" Type="datetime" Nullable="false" />
+          <Property Name="ValidTo" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Cover">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CoverName" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Book_ID" Type="int" customannotation:Index="{ Name: IX_Book_ID, Order: 0 }" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Depot">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DepotName" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="City" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Address" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Zip" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Type_ID" Type="int" customannotation:Index="{ Name: IX_Type_ID, Order: 0 }" Nullable="true" />
+          <Property Name="Books_ID" Type="int" customannotation:Index="{ Name: IX_Books_ID, Order: 0 }" Nullable="true" />
+          <Property Name="Partner_ID" Type="int" customannotation:Index="{ Name: IX_Partner_ID, Order: 0 }" Nullable="true" />
+          <Property Name="Stockist_margin_ID" Type="int" customannotation:Index="{ Name: IX_Stockist_margin_ID, Order: 0 }" Nullable="true" />
+        </EntityType>
+        <EntityType Name="Depot_type">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Type" Type="nvarchar(max)" Nullable="true" />
+        </EntityType>
+        <EntityType Name="Theme">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" customannotation:Index="{ Name: IX_ID, Order: 0 }" Nullable="false" />
+          <Property Name="ThemeName" Type="nvarchar(max)" Nullable="true" />
+        </EntityType>
+        <EntityType Name="Partner">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="true" />
+        </EntityType>
+        <EntityType Name="AccountType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Details" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Partner_ID" Type="int" customannotation:Index="{ Name: IX_Partner_ID, Order: 0 }" Nullable="true" />
+        </EntityType>
+        <EntityType Name="Press">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Partner" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="City" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Address" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Zip" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Country" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Acitve" Type="int" Nullable="false" />
+          <Property Name="Pressure_ID" Type="int" customannotation:Index="{ Name: IX_Pressure_ID, Order: 0 }" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Pressure">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ItemNumber" Type="int" Nullable="false" />
+          <Property Name="OrderDate" Type="datetime" Nullable="false" />
+          <Property Name="AfterPressure" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stockist_margin">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar(max)" Nullable="true" />
+          <Property Name="Discount" Type="float" Nullable="false" />
+        </EntityType>
+        <Association Name="Cover_Book">
+          <End Role="Books" Type="Self.Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Cover" Type="Self.Cover" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Cover">
+              <PropertyRef Name="Book_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Depot_Type">
+          <End Role="Depot_type" Type="Self.Depot_type" Multiplicity="0..1" />
+          <End Role="Depot" Type="Self.Depot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Depot_type">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Depot">
+              <PropertyRef Name="Type_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Books_Depot">
+          <End Role="Books" Type="Self.Books" Multiplicity="0..1" />
+          <End Role="Depot" Type="Self.Depot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Depot">
+              <PropertyRef Name="Books_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Theme_Book">
+          <End Role="Books" Type="Self.Books" Multiplicity="1" />
+          <End Role="Theme" Type="Self.Theme" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Theme">
+              <PropertyRef Name="ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Author_Book">
+          <End Role="Books" Type="Self.Books" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Author" Type="Self.Author" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Books">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Author">
+              <PropertyRef Name="Book_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Partner_AccountType">
+          <End Role="Partner" Type="Self.Partner" Multiplicity="0..1" />
+          <End Role="AccountType" Type="Self.AccountType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Partner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="AccountType">
+              <PropertyRef Name="Partner_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Partner_Depot">
+          <End Role="Partner" Type="Self.Partner" Multiplicity="0..1" />
+          <End Role="Depot" Type="Self.Depot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Partner">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Depot">
+              <PropertyRef Name="Partner_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Press_Pressure">
+          <End Role="Pressure" Type="Self.Pressure" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Press" Type="Self.Press" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Pressure">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Press">
+              <PropertyRef Name="Pressure_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Stockist_margin_Depot">
+          <End Role="Stockist_margin" Type="Self.Stockist_margin" Multiplicity="0..1" />
+          <End Role="Depot" Type="Self.Depot" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stockist_margin">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Depot">
+              <PropertyRef Name="Stockist_margin_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CodeFirstDatabase">
+          <EntitySet Name="Author" EntityType="Self.Author" Schema="dbo" Table="Authors" />
+          <EntitySet Name="Books" EntityType="Self.Books" Schema="dbo" Table="Books" />
+          <EntitySet Name="Cover" EntityType="Self.Cover" Schema="dbo" Table="Covers" />
+          <EntitySet Name="Depot" EntityType="Self.Depot" Schema="dbo" Table="Depots" />
+          <EntitySet Name="Depot_type" EntityType="Self.Depot_type" Schema="dbo" Table="Depot_type" />
+          <EntitySet Name="Theme" EntityType="Self.Theme" Schema="dbo" Table="Themes" />
+          <EntitySet Name="Partner" EntityType="Self.Partner" Schema="dbo" Table="Partners" />
+          <EntitySet Name="AccountType" EntityType="Self.AccountType" Schema="dbo" Table="AccountTypes" />
+          <EntitySet Name="Press" EntityType="Self.Press" Schema="dbo" Table="Presses" />
+          <EntitySet Name="Pressure" EntityType="Self.Pressure" Schema="dbo" Table="Pressures" />
+          <EntitySet Name="Stockist_margin" EntityType="Self.Stockist_margin" Schema="dbo" Table="Stockist_margin" />
+          <AssociationSet Name="Cover_Book" Association="Self.Cover_Book">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="Cover" EntitySet="Cover" />
+          </AssociationSet>
+          <AssociationSet Name="Depot_Type" Association="Self.Depot_Type">
+            <End Role="Depot_type" EntitySet="Depot_type" />
+            <End Role="Depot" EntitySet="Depot" />
+          </AssociationSet>
+          <AssociationSet Name="Books_Depot" Association="Self.Books_Depot">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="Depot" EntitySet="Depot" />
+          </AssociationSet>
+          <AssociationSet Name="Theme_Book" Association="Self.Theme_Book">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="Theme" EntitySet="Theme" />
+          </AssociationSet>
+          <AssociationSet Name="Author_Book" Association="Self.Author_Book">
+            <End Role="Books" EntitySet="Books" />
+            <End Role="Author" EntitySet="Author" />
+          </AssociationSet>
+          <AssociationSet Name="Partner_AccountType" Association="Self.Partner_AccountType">
+            <End Role="Partner" EntitySet="Partner" />
+            <End Role="AccountType" EntitySet="AccountType" />
+          </AssociationSet>
+          <AssociationSet Name="Partner_Depot" Association="Self.Partner_Depot">
+            <End Role="Partner" EntitySet="Partner" />
+            <End Role="Depot" EntitySet="Depot" />
+          </AssociationSet>
+          <AssociationSet Name="Press_Pressure" Association="Self.Press_Pressure">
+            <End Role="Pressure" EntitySet="Pressure" />
+            <End Role="Press" EntitySet="Press" />
+          </AssociationSet>
+          <AssociationSet Name="Stockist_margin_Depot" Association="Self.Stockist_margin_Depot">
+            <End Role="Stockist_margin" EntitySet="Stockist_margin" />
+            <End Role="Depot" EntitySet="Depot" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </StorageModels>
+  </Runtime>
+  <Designer>
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="ProcessDependentTemplatesOnSave" Value="False" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <Diagrams >
+      <Diagram DiagramId="120f0eaddd6b4da8bebb2ba36a01e452" Name="Diagram1">
+        <EntityTypeShape EntityType="bookPublishDB.Author" Width="1.5" PointX="1.5" PointY="13.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Books" Width="1.5" PointX="0.75" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Cover" Width="1.5" PointX="1.5" PointY="15.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Depot" Width="1.5" PointX="3" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Depot_type" Width="1.5" PointX="5.25" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Theme" Width="1.5" PointX="1.5" PointY="18.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Partner" Width="1.5" PointX="0.75" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.AccountType" Width="1.5" PointX="3" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Press" Width="1.5" PointX="5.75" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Pressure" Width="1.5" PointX="8" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="bookPublishDB.Stockist_margin" Width="1.5" PointX="0.75" PointY="20.5" IsExpanded="true" />
+        <AssociationConnector Association="bookPublishDB.Cover_Book" ManuallyRouted="false" />
+        <AssociationConnector Association="bookPublishDB.Depot_Type" ManuallyRouted="false" />
+        <AssociationConnector Association="bookPublishDB.Books_Depot" ManuallyRouted="false" />
+        <AssociationConnector Association="bookPublishDB.Theme_Book" ManuallyRouted="false" />
+        <AssociationConnector Association="bookPublishDB.Author_Book" ManuallyRouted="false" />
+        <AssociationConnector Association="bookPublishDB.Partner_AccountType" ManuallyRouted="false" />
+        <AssociationConnector Association="bookPublishDB.Partner_Depot" ManuallyRouted="false" />
+        <AssociationConnector Association="bookPublishDB.Press_Pressure" ManuallyRouted="false" />
+        <AssociationConnector Association="bookPublishDB.Stockist_margin_Depot" ManuallyRouted="false" />
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</Edmx>
