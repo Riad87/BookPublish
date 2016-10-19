@@ -1,34 +1,81 @@
-﻿@model IEnumerable<bookPublishDB.Stockist_margin>
+﻿@model BookPublish_WebApp.Models.StockistMarginViewModel
+@using PagedList.Mvc;
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Partneri kedvezmények";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Partneri kedvezmények</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Discount)
-        </th>
-        <th></th>
-    </tr>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.DiscountSort)
+    @*@Html.HiddenFor(m => m.PartnerSort)*@
+    @Html.HiddenFor(m => m.CurrentFilter)
+    @Html.HiddenFor(m => m.SortOrder)
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Discount)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
+    <div class="container-fluid">
+        @Html.Label("Keresés: ")
+        @Html.TextBox("SearchString")
+    </div>
+    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
+        <tr>
+            <th> # </th>
+            <th>
+                @Html.ActionLink("Partner neve", "Index", new { sortOrder = Model.PartnerSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Kedvezmény", "Index", new { sortOrder = Model.DiscountSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Aktív-e", "Index", new { sortOrder = Model.ActiveSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>            
+            <th>
+                Találatok:
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                db/oldal
+            </th>
+        </tr>
+
+
+        @for (int i = 0; i < Model.StMargins.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(model => model.StMargins[i].ID)
+                    @Html.HiddenFor(model => model.StMargins[i].Partner.Name)
+                    @Html.HiddenFor(model => model.StMargins[i].Discount)
+                    @Html.HiddenFor(model => model.StMargins[i].Active)
+                    @Html.EditorFor(model => model.StMargins[i].IsDeleted)
+                </td>
+
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.StMargins[i].Partner.Name)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.StMargins[i].Discount)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.StMargins[i].Active)
+                </td>
+                <td>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.StMargins[i].ID })</button>
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div class="container">
+        Page @Model.PageNumber of @Model.PageCount
+
+        @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+    </div>
+    <div class="container">
+        <input type="submit" value="Törlés" />
+    </div>
+
 }
-
-</table>

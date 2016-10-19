@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace bookPublishDB
 {
@@ -7,7 +8,12 @@ namespace bookPublishDB
         public int ID { get; set; }
         public string ThemeName { get; set; }
         public int Active { get; set; }
-           
-        
+        public bool Deleted { get; set; }
+
+        [NotMapped]
+        public bool IsDeleted { get; set; }
+
+
+
     }
 }

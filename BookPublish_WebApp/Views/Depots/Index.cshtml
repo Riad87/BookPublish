@@ -1,46 +1,100 @@
-﻿@model IEnumerable<bookPublishDB.Depot>
-
+﻿@model BookPublish_WebApp.Models.DepotsViewModel
+@using PagedList.Mvc;
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Raktárok";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Raktárok</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.City)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Address)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Zip)
-        </th>
-        <th></th>
-    </tr>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.NameSort)
+    @Html.HiddenFor(m => m.CurrentFilter)
+    @Html.HiddenFor(m => m.SortOrder)
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.City)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Address)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Zip)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
+    <div class="container-fluid">
+        @Html.Label("Keresés: ")
+        @Html.TextBox("SearchString")
+    </div>
+    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
+        <tr>
+            <th> # </th>
+            <th>
+                @Html.ActionLink("Raktár neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Irányítószám", "Index", new { sortOrder = Model.ZipSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Város", "Index", new { sortOrder = Model.CitySort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Cím", "Index", new { sortOrder = Model.AddressSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Raktár típus", "Index", new { sortOrder = Model.TypeSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                Találatok:
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                db/oldal
+            </th>
+        </tr>
+
+
+        @for (int i = 0; i < Model.Depots.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(model => model.Depots[i].ID)
+                    @Html.HiddenFor(model => model.Depots[i].Depot_Name)
+                    @Html.HiddenFor(model => model.Depots[i].Address)
+                    @Html.HiddenFor(model => model.Depots[i].Zip)
+                    @Html.HiddenFor(model => model.Depots[i].City)
+                    @Html.HiddenFor(model => model.Depots[i].Type)
+                    @Html.EditorFor(model => model.Depots[i].IsDeleted)
+                </td>
+
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Depots[i].Depot_Name)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Depots[i].Zip)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Depots[i].City)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Depots[i].Address)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Depots[i].Type.Type)
+                </td>
+                <td>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Depots[i].ID })</button>
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div class="container">
+        Page @Model.PageNumber of @Model.PageCount
+
+        @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+    </div>
+    <div class="container">
+        <input type="submit" value="Törlés" />
+    </div>
+
 }
 
-</table>
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+}

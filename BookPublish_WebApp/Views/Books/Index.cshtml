@@ -1,118 +1,212 @@
-﻿@model PagedList.IPagedList<bookPublishDB.Books>
+﻿@model BookPublish_WebApp.Models.BooksViewModel
 @using PagedList.Mvc;
 
 @{
     ViewBag.Title = "Könyvek";
-    var count = Model.Count;
+
 }
 
-@using (Html.BeginForm("Index", "Books", FormMethod.Get))
+@using (Html.BeginForm())
 {
-    <p>@Html.TextBox("searchString", ViewBag.CurrentFilter as string, new { @class = "col-offset-xs-2 col-xs-2" }) <input class="col-xs-offset-3 col-xs-2" type="submit" value="Keresés" /></p>
-}
+    @Html.HiddenFor(m => m.NameSort)
+    @Html.HiddenFor(m => m.CurrentFilter)
+    @Html.HiddenFor(m => m.SortOrder)
 
-<table class="table table-striped table-hover table-responsive table-condensed" border="0">
-    <tr>
-        <th align="center">
-            @Html.ActionLink("ISBN", "Index", new { sortOrder = ViewBag.ISBN, currentfilter = ViewBag.CurrentFilter })
-        </th>
-        <th align="center">
-            @Html.ActionLink("Könyv neve", "Index", new { sortOrder = ViewBag.Name, currentfilter = ViewBag.CurrentFilter })
-        </th>
-        <th align="center">
-            @Html.ActionLink("Azonosító", "Index", new { sortOrder = ViewBag.ItemNum, currentfilter = ViewBag.CurrentFilter })
-        </th>
-        <th align="center">
-            @Html.ActionLink("Nettó ár", "Index", new { sortOrder = ViewBag.NetValue, currentfilter = ViewBag.CurrentFilter })
-        </th>
-        <th align="center">
-            @Html.ActionLink("Áfa", "Index", new { sortOrder = ViewBag.Vat, currentfilter = ViewBag.CurrentFilter })
-        </th>
-        <th align="center">
-            @Html.ActionLink("Bruttó ár", "Index", new { sortOrder = ViewBag.GrossValue, currentfilter = ViewBag.CurrentFilter })
-        </th>
-        <th align="center">
-            @Html.ActionLink("Érvényes -tól", "Index", new { sortOrder = ViewBag.ValidFrom, currentfilter = ViewBag.CurrentFilter })
-        </th>
-        <th align="center">
-            @Html.ActionLink("Érvényes -ig", "Index", new { sortOrder = ViewBag.ValidTo, currentfilter = ViewBag.CurrentFilter })
-        </th>
-        <th align="right">
-            Találatok:
-            @using (Html.BeginForm("Index", "Books", FormMethod.Get))
-            {
-                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 },{"5", 5 }, {"10", 10 } }, "Key","Value", 10), new { id = "pagesizelist" })
-                @Html.Hidden("sortorder", ViewBag.CoverName as string)
-            }
-        </th>
-    </tr>
+    <div class="container-fluid">
+        <p>@Html.TextBox("searchString") <input class="col-xs-offset-3 col-xs-2" type="submit" value="Keresés" /></p>
+    </div>
 
-    @foreach (var item in Model)
-    {
+    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
         <tr>
-            <td>
-                @Html.CheckBox("checkbox" ,false , new { id = item.ID })
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ISBN)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ItemNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NetValue)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Vat)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GrossValue)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ValidFrom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ValidTo)
-            </td>
-            <td>
-                <button>@Html.ActionLink("Edit", "Edit", new { id = item.ID }) </button>
+            <th>
+                #
+            </th>
+            <th align="center">
+                @Html.ActionLink("Azonosító", "Index", new { sortOrder = Model.ItemNum, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("ISBN", "Index", new { sortOrder = Model.ISBN, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Szerző", "Index", new { sortOrder = Model.ISBN, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Könyv neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Nettó ár", "Index", new { sortOrder = Model.NetValue, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Áfa", "Index", new { sortOrder = Model.Vat, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Bruttó ár", "Index", new { sortOrder = Model.GrossValue, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Érvényes -tól", "Index", new { sortOrder = Model.ValidFrom, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Érvényes -ig", "Index", new { sortOrder = Model.ValidTo, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="right">
+                Találatok:
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                db/oldal
 
-            </td>
+            </th>
         </tr>
+
+        @for (int i = 0; i < Model.Books.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(model => model.Books[i].ID)
+                    @Html.HiddenFor(model => model.Books[i].ISBN)
+                    @Html.HiddenFor(model => model.Books[i].Author)
+                    @Html.HiddenFor(model => model.Books[i].Name)
+                    @Html.HiddenFor(model => model.Books[i].NetValue)
+                    @Html.HiddenFor(model => model.Books[i].Vat)
+                    @Html.HiddenFor(model => model.Books[i].GrossValue)
+                    @Html.HiddenFor(model => model.Books[i].ValidFrom)
+                    @Html.HiddenFor(model => model.Books[i].ValidTo)
+
+                    @Html.EditorFor(model => model.Books[i].IsDeleted)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].ItemNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].ISBN)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].Author.AuthorName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].NetValue) Ft
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].Vat)%
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].GrossValue) Ft 
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].ValidFrom)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].ValidTo)
+                </td>
+                <td>
+                    <button  data-toggle = "modal", data-target = "#myModal">@Html.ActionLink("Edit", "Edit", new { id = Model.Books[i].ID }) </button>
+
+                </td>
+            </tr>
         }
 
-</table>
-@*@if (count > 10)
-{*@
-    <div class="container">
-        Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+    </table>
 
-        @Html.PagedListPager(Model, page => Url.Action("Index",
-        new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, pagesize = ViewBag.PageSize }))
-    </div>
-@*}*@
-<div class="container">
+        <div class="container">
+            Page @Model.PageNumber of @Model.PageCount
 
-    <button class="btn btn-default col-xs-offset-2 col-xs-2">@Html.ActionLink("Create New", "Create")</button>
-    <button class="btn btn-danger col-xs-offset-4 col-xs-2">@Html.ActionLink("Delete", "Delete")</button>
+            @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+        </div>
 
-</div>
+        <div class="container">
+            <input type="submit" value="Törlés" />
+            @*<button class="btn btn-default col-xs-offset-2 col-xs-2">@Html.ActionLink("Create New", "Create")</button>
+                <button class="btn btn-danger col-xs-offset-4 col-xs-2">@Html.ActionLink("Delete", "Delete")</button>*@
+
+        </div>
+
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Modal Header</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ISBN, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.ISBN, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.ISBN, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Books[i, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ItemNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.ItemNumber, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.ItemNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.NetValue, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.NetValue, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.NetValue, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Vat, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Vat, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Vat, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.GrossValue, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.GrossValue, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.GrossValue, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ValidFrom, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.ValidFrom, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.ValidFrom, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.ValidTo, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.ValidTo, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.ValidTo, "", new { @class = "text-danger" })
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+       
+}
 @section scripts{
-    <script>
-        @*function PageSize() {
-            var select = document.getElementById("list");
-            var selected = select.value;
-            
-            @Url.Action("Index", "Books", new { selected = ViewBag.PageSize  });        
+    @Scripts.Render("~/bundles/jquery")
 
-        }*@
-        $('#pagesizelist').on('change', function (event) {
-            var form = $(event.target).parents('form');
-            form.submit();
-        });
-
-    </script>
-    }
+}

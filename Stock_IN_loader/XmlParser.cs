@@ -3,6 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using bookPublishDB;
 using System.IO;
+using System.Globalization;
 
 namespace Stock_IN_loader
 {
@@ -16,8 +17,8 @@ namespace Stock_IN_loader
             this.path = path;
         }
 
-        public void XmlRead()
-        {
+        public bool XmlRead()
+        {            
             try
             {
                 var xml = XDocument.Load(path);
@@ -49,11 +50,14 @@ namespace Stock_IN_loader
             catch (System.IO.FileNotFoundException)
             {
                 Console.WriteLine("Jelenleg nincs feldolgozandó dokumentum, vagy hibás a konfig.");
+                return false;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Hiba történt a xml feldolgozása közben: " + ex);
             }
+
+            return true;
         }
 
         public void SaveData(Books book)
@@ -86,7 +90,9 @@ namespace Stock_IN_loader
             try
             {
                 string s = Path.Combine(source, filename);
-                filename = "Valami"+filename; 
+                string date = System.DateTime.Now.ToShortTimeString();
+                string time = date.Replace(':', '_');
+                filename = "Feldolgozott"+time+ filename; 
                 string d = Path.Combine(dest, filename);
 
                 File.Move(s, d);

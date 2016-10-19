@@ -8,34 +8,87 @@ using System.Web;
 using System.Web.Mvc;
 using PagedList;
 using bookPublishDB;
+using BookPublish_WebApp.Models;
+using System.Diagnostics;
+using System.Data.Entity.Validation;
+using System.Data.SqlClient;
 
 namespace BookPublish_WebApp.Controllers
 {
     public class BooksController : Controller
     {
-        private BookContext db = new BookContext();
+        private BookContext _db = new BookContext();
 
         // GET: Books
         [Authorize]
         public ActionResult Index(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
         {
-            ViewBag.CurrentSort = sortorder;
-            ViewBag.PageSize = pagesize;
-            int? DefaultPageSize = 10;
-            if (pagesize != null)
+            var model = GetModel(sortorder, currentFilter, searchString, pagesize, page);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Index(BooksViewModel booksViewModel)
+        {
+            //TODO: logikai törlés
+            foreach (var book in booksViewModel.Books)
             {
-                DefaultPageSize = pagesize;
+                if (book.IsDeleted == true)
+                {
+                    try
+                    {
+                        Books b = _db.Books
+                                   .Where(x => x.ID == book.ID)
+                                   .Include(a => a.Author).First();
+                        b.Deleted = true;
+                        _db.SaveChanges();
+                    }
+                    catch (DbEntityValidationException dbEx)
+                    {
+                        foreach (var validationErrors in dbEx.EntityValidationErrors)
+                        {
+                            foreach (var validationError in validationErrors.ValidationErrors)
+                            {
+                                Trace.TraceInformation("Property: {0} Error: {1}",
+                                                        validationError.PropertyName,
+                                                        validationError.ErrorMessage);
+                            }
+                        }
+                    }
+                }
             }
-            
-            //ViewBag.CurrentPageSize
-            ViewBag.Name = String.IsNullOrEmpty(sortorder) ? "name_desc" : "";
-            ViewBag.ISBN = sortorder == "isbn" ? "isbn_desc" : "isbn";
-            ViewBag.ItemNum = sortorder == "item" ? "item_desc" : "item";
-            ViewBag.NetValue = sortorder == "netV" ? "netV_desc" : "netV";
-            ViewBag.Vat = sortorder == "Vat" ? "Vat_desc" : "Vat";
-            ViewBag.GrossValue = sortorder == "GrossValue" ? "GrossValue_desc" : "GrossValue";
-            ViewBag.ValidFrom = sortorder == "ValidFrom" ? "ValidFrom_desc" : "ValidFrom";
-            ViewBag.ValidTo = sortorder == "ValidTo" ? "ValidTo_desc" : "ValidTo";
+
+            var model = GetModel(booksViewModel.SortOrder, booksViewModel.CurrentFilter, null, booksViewModel.PageSize, null);
+
+            foreach (var books in model.Books)
+            {
+                books.IsDeleted = false;
+            }
+
+            return View(model);
+        }
+        public BooksViewModel GetModel(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
+        {
+            var model = new BooksViewModel();
+
+            model.CurrentSort = sortorder;
+
+            int DefaultPageSize = pagesize.HasValue ? pagesize.Value : 10;
+
+            model.PageSize = DefaultPageSize;
+
+            int actualPage = page.HasValue ? page.Value : 1;
+
+            //model.CurrentPageSize
+            model.NameSort = String.IsNullOrEmpty(sortorder) ? "name_desc" : "";
+            model.ISBN = sortorder == "isbn" ? "isbn_desc" : "isbn";
+            model.ItemNum = sortorder == "item" ? "item_desc" : "item";
+            model.NetValue = sortorder == "netV" ? "netV_desc" : "netV";
+            model.Vat = sortorder == "Vat" ? "Vat_desc" : "Vat";
+            model.GrossValue = sortorder == "GrossValue" ? "GrossValue_desc" : "GrossValue";
+            model.ValidFrom = sortorder == "ValidFrom" ? "ValidFrom_desc" : "ValidFrom";
+            model.ValidTo = sortorder == "ValidTo" ? "ValidTo_desc" : "ValidTo";
 
             if (searchString != null)
                 page = 1;
@@ -43,71 +96,86 @@ namespace BookPublish_WebApp.Controllers
                 searchString = currentFilter;
 
 
-            ViewBag.CurrentFilter = searchString;
+            model.CurrentFilter = searchString;
 
-            var Books = from b in db.Books
-                        select b;
+            //var books = _db.Books
+            //            .Join(_db.Pressure, b => b.ID, p => p.ID, (b, p) => new { Books = b, Pressure = p })
+            //            .Where(bp => bp.Books.ID == bp.Pressure.Book.ID)
+            //            .Include(a => a.Author);
+
+            var books = _db.Books
+                        .Include(a => a.Author)
+                        .Where(b => b.Deleted != true);
+                        
+
+            model.AllBooksCount = books.Count();            
+
+            //model.Quantity = _db.Database.ExecuteSqlCommand("GetBookQuantity",new SqlParameter("@BookID",4));
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                Books = Books.Where(s => s.Name.Contains(searchString));
+                books = books.Where(s => s.Name.Contains(searchString));
             }
 
             switch (sortorder)
             {
                 case "name_desc":
-                    Books = Books.OrderByDescending(s => s.Name);
+                    books = books.OrderByDescending(s => s.Name);
                     break;
                 case "isbn":
-                    Books = Books.OrderBy(s => s.ISBN);
+                    books = books.OrderBy(s => s.ISBN);
                     break;
                 case "isbn_desc":
-                    Books = Books.OrderByDescending(s => s.ISBN);
+                    books = books.OrderByDescending(s => s.ISBN);
                     break;
                 case "item":
-                    Books = Books.OrderBy(s => s.ItemNumber);
+                    books = books.OrderBy(s => s.ItemNumber);
                     break;
                 case "item_desc":
-                    Books = Books.OrderByDescending(s => s.ItemNumber);
+                    books = books.OrderByDescending(s => s.ItemNumber);
                     break;
                 case "netV":
-                    Books = Books.OrderBy(s => s.NetValue);
+                    books = books.OrderBy(s => s.NetValue);
                     break;
                 case "netV_desc":
-                    Books = Books.OrderByDescending(s => s.NetValue);
+                    books = books.OrderByDescending(s => s.NetValue);
                     break;
                 case "Vat":
-                    Books = Books.OrderBy(s => s.Vat);
+                    books = books.OrderBy(s => s.Vat);
                     break;
                 case "Vat_desc":
-                    Books = Books.OrderByDescending(s => s.Vat);
+                    books = books.OrderByDescending(s => s.Vat);
                     break;
                 case "GrossValue":
-                    Books = Books.OrderBy(s => s.GrossValue);
+                    books = books.OrderBy(s => s.GrossValue);
                     break;
                 case "GrossValue_desc":
-                    Books = Books.OrderByDescending(s => s.GrossValue);
+                    books = books.OrderByDescending(s => s.GrossValue);
                     break;
                 case "ValidFrom":
-                    Books = Books.OrderBy(s => s.ValidFrom);
+                    books = books.OrderBy(s => s.ValidFrom);
                     break;
                 case "ValidFrom_desc":
-                    Books = Books.OrderByDescending(s => s.ValidFrom);
+                    books = books.OrderByDescending(s => s.ValidFrom);
                     break;
                 case "ValidTo":
-                    Books = Books.OrderBy(s => s.ValidTo);
+                    books = books.OrderBy(s => s.ValidTo);
                     break;
                 case "ValidTo_desc":
-                    Books = Books.OrderByDescending(s => s.ValidTo);
+                    books = books.OrderByDescending(s => s.ValidTo);
                     break;
                 default:
-                    Books = Books.OrderBy(s => s.Name);
+                    books = books.OrderBy(s => s.Name);
                     break;
             }
 
             int pageNumber = (page ?? 1);
-            
-            return View(Books.ToPagedList(pageNumber, (int)DefaultPageSize));
+
+            model.PageNumber = pageNumber;
+
+            model.Books = books.Skip((actualPage - 1) * DefaultPageSize).Take(DefaultPageSize).ToList();
+
+            return model;
         }
 
         // GET: Books/Details/5
@@ -118,7 +186,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Books books = (Books) db.Books.Include(n => n.Author);
+            Books books = (Books)_db.Books.Include(n => n.Author);
             if (books == null)
             {
                 return HttpNotFound();
@@ -142,8 +210,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Books.Add(books);
-                db.SaveChanges();
+                _db.Books.Add(books);
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -157,7 +225,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Books books = db.Books.Find(id);
+            Books books = _db.Books.Find(id);
             if (books == null)
             {
                 return HttpNotFound();
@@ -174,8 +242,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(books).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.Entry(books).State = EntityState.Modified;
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(books);
@@ -188,7 +256,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Books books = db.Books.Find(id);
+            Books books = _db.Books.Find(id);
             if (books == null)
             {
                 return HttpNotFound();
@@ -201,9 +269,9 @@ namespace BookPublish_WebApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Books books = db.Books.Find(id);
-            db.Books.Remove(books);
-            db.SaveChanges();
+            Books books = _db.Books.Find(id);
+            _db.Books.Remove(books);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -211,7 +279,7 @@ namespace BookPublish_WebApp.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

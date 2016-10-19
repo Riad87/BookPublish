@@ -7,13 +7,13 @@ namespace BookDB.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class author_isdeleted : IMigrationMetadata
+    public sealed partial class All_delete_Column : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(author_isdeleted));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(All_delete_Column));
         
         string IMigrationMetadata.Id
         {
-            get { return "201609292039022_author_isdeleted"; }
+            get { return "201610131732144_All_delete_Column"; }
         }
         
         string IMigrationMetadata.Source

@@ -8,17 +8,106 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using bookPublishDB;
+using BookPublish_WebApp.Models;
 
 namespace BookPublish_WebApp.Controllers
 {
     public class ThemesController : Controller
     {
-        private BookContext db = new BookContext();
+        private BookContext _db = new BookContext();
 
         // GET: Themes
-        public async Task<ActionResult> Index()
+        [HttpGet]
+        public ActionResult Index(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
         {
-            return View(await db.Themes.ToListAsync());
+            var model = GetModel(sortorder, currentFilter, searchString, pagesize, page);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Index(ThemesViewModel themesViewModel)
+        {
+            foreach (var theme in themesViewModel.Themes)
+            {
+                if (theme.IsDeleted == true)
+                {
+                    Theme a = (from x in _db.Themes
+                                where x.ID == theme.ID
+                                select x).First();
+                    a.Deleted = true;
+                    _db.SaveChanges();
+                }
+            }
+
+            var model = GetModel(themesViewModel.SortOrder, themesViewModel.CurrentFilter, null, themesViewModel.PageSize, null);
+
+            foreach (var theme in model.Themes)
+            {
+                theme.IsDeleted = false;
+            }
+
+            return View(model);
+        }
+
+        public ThemesViewModel GetModel(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
+        {
+            var model = new ThemesViewModel();
+
+            model.SortOrder = sortorder;
+
+            //TODO: egyszerűsíteni
+            int defaultPageSize = pagesize.HasValue ? pagesize.Value : 10;
+
+            model.PageSize = defaultPageSize;
+
+            int actualPage = page.HasValue ? page.Value : 1;
+            model.PageNumber = actualPage;
+
+            model.NameSort = String.IsNullOrEmpty(model.SortOrder) ? "name_desc" : "";
+            model.ActiveSort = model.SortOrder == "active" ? "act_desc" : "active";
+
+            if (searchString != null)
+                page = 1;
+            else
+                searchString = currentFilter;
+
+
+            model.CurrentFilter = searchString;
+
+            var themes = from a in _db.Themes
+                          where a.Deleted != true
+                          select a;
+
+            model.AllThemeCount = themes.Count();
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                themes = themes.Where(s => s.ThemeName.Contains(searchString));
+            }
+
+            switch (sortorder)
+            {
+                case "name_desc":
+                    themes = themes.OrderByDescending(s => s.ThemeName);
+                    break;
+                case "active":
+                    themes = themes.OrderBy(s => s.Active);
+                    break;
+                case "act_desc":
+                    themes = themes.OrderByDescending(s => s.Active);
+                    break;
+                default:
+                    themes = themes.OrderBy(s => s.ThemeName);
+                    break;
+            }
+
+            int pageNumber = (page ?? 1);
+            model.PageNumber = pageNumber;
+
+            model.Themes = themes.Skip((actualPage - 1) * defaultPageSize).Take(defaultPageSize).ToList();
+
+            return model;
         }
 
         // GET: Themes/Details/5
@@ -28,7 +117,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Theme theme = await db.Themes.FindAsync(id);
+            Theme theme = await _db.Themes.FindAsync(id);
             if (theme == null)
             {
                 return HttpNotFound();
@@ -51,8 +140,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Themes.Add(theme);
-                await db.SaveChangesAsync();
+                _db.Themes.Add(theme);
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
@@ -66,7 +155,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Theme theme = await db.Themes.FindAsync(id);
+            Theme theme = await _db.Themes.FindAsync(id);
             if (theme == null)
             {
                 return HttpNotFound();
@@ -83,8 +172,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(theme).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                _db.Entry(theme).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(theme);
@@ -97,7 +186,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Theme theme = await db.Themes.FindAsync(id);
+            Theme theme = await _db.Themes.FindAsync(id);
             if (theme == null)
             {
                 return HttpNotFound();
@@ -110,9 +199,9 @@ namespace BookPublish_WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Theme theme = await db.Themes.FindAsync(id);
-            db.Themes.Remove(theme);
-            await db.SaveChangesAsync();
+            Theme theme = await _db.Themes.FindAsync(id);
+            _db.Themes.Remove(theme);
+            await _db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
@@ -120,7 +209,7 @@ namespace BookPublish_WebApp.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

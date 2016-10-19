@@ -25,7 +25,29 @@ jQuery(document).ready(function() {
     		}
     	});
     	
-    });
-    
+    });    
     
 });
+
+$('#pagesizelist').on('change', function (event) {
+    window.location.href = updateQueryStringParameter(window.location.href, 'pagesize', $('#pagesizelist').val());
+});
+
+$('#SearchString').keypress(function (event) {
+    if (event.which == 13) {
+        event.preventDefault();
+        window.location.href = updateQueryStringParameter(window.location.href, 'SearchString', $('#SearchString').val());
+    }
+});
+
+function updateQueryStringParameter(uri, key, value) {
+    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+    if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + "=" + value + '$2');
+    }
+    else {
+        return uri + separator + key + "=" + value;
+    }
+}
+

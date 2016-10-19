@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace bookPublishDB
 {
@@ -8,8 +9,14 @@ namespace bookPublishDB
             
         [Required]
         public Depot_type Type { get; set; }
+        public string Depot_Name { get; set; }
         public string City { get; set; }
         public string Address { get; set; }
         public string Zip { get; set; }
+        public bool Deleted { get; set; }
+
+        [NotMapped]
+        public bool IsDeleted { get; set; }
+
     }
 }

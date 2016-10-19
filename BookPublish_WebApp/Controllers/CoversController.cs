@@ -8,29 +8,73 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using bookPublishDB;
-using PagedList;
+using BookPublish_WebApp.Models;
+using System.Diagnostics;
 
 namespace BookPublish_WebApp.Controllers
 {
+    [Authorize]
     public class CoversController : Controller
     {
-        private BookContext db = new BookContext();
+        private BookContext _db = new BookContext();
 
-        // GET: Cover
-        [Authorize]
+        [HttpGet]
         public ActionResult Index(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
         {
-            ViewBag.CurrentSort = sortorder;
-            ViewBag.PageSize = pagesize;
-            int? DefaultPageSize = 10;
+            var model = GetModel(sortorder, currentFilter, searchString, pagesize, page);
 
-            if (pagesize != null)
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Index(CoversViewModel coversViewModel)
+        {
+            //TODO: logikai törlés
+            foreach (var cover in coversViewModel.Covers)
             {
-                DefaultPageSize = pagesize;
+                if (cover.IsDeleted == true)
+                {
+                    try
+                    {
+                        Cover c = (from x in _db.Covers
+                                   where x.ID == cover.ID
+                                   select x).First();
+                        c.Deleted = true;
+                        _db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.TraceInformation(ex.Message);
+                    }
+                    
+                }
             }
 
-            ViewBag.CoverName = String.IsNullOrEmpty(sortorder) ? "name_desc" : "";
-            ViewBag.Active = sortorder == "active" ? "active_desc" : "active";
+            var model = GetModel(coversViewModel.SortOrder, coversViewModel.CurrentFilter, null, coversViewModel.PageSize, null);
+
+            foreach (var cover in model.Covers)
+            {
+                cover.IsDeleted = false;
+            }
+
+            return View(model);
+        }             
+        
+        public CoversViewModel GetModel(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
+        {
+            var model = new CoversViewModel();
+
+            model.CurrentSort = sortorder;
+           
+            int DefaultPageSize = pagesize.HasValue ? pagesize.Value : 10;
+
+            model.PageSize = DefaultPageSize;
+
+            int actualPage = page.HasValue ? page.Value : 1;
+            model.PageNumber = actualPage;
+
+            model.CoverSort = String.IsNullOrEmpty(sortorder) ? "name_desc" : "";
+            model.ActiveSort = sortorder == "active" ? "active_desc" : "active";
 
             if (searchString != null)
             {
@@ -39,10 +83,13 @@ namespace BookPublish_WebApp.Controllers
             else
                 searchString = currentFilter;
 
-            ViewBag.CurrentFilter = searchString;
+            model.CurrentFilter = searchString;
 
-            var Covers = from c in db.Covers
+            var Covers = from c in _db.Covers
+                         where c.Deleted != true
                          select c;
+
+            model.AllCoversCount = Covers.Count();
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -65,11 +112,15 @@ namespace BookPublish_WebApp.Controllers
                     break;
             }
 
-            int pagenumber = (page ?? 1);
+            int pageNumber = (page ?? 1);
+            model.PageNumber = pageNumber;
 
-            return View(Covers.ToPagedList(pagenumber,(int)DefaultPageSize));
+            model.Covers = Covers.Skip((actualPage - 1) * DefaultPageSize).Take(DefaultPageSize).ToList();
+
+            return model;
         }
 
+        
         // GET: Cover/Details/5
         public async Task<ActionResult> Details(int? id)
         {
@@ -77,7 +128,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Cover cover = await db.Covers.FindAsync(id);
+            Cover cover = await _db.Covers.FindAsync(id);
             if (cover == null)
             {
                 return HttpNotFound();
@@ -100,8 +151,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Covers.Add(cover);
-                await db.SaveChangesAsync();
+                _db.Covers.Add(cover);
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
@@ -115,7 +166,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Cover cover = await db.Covers.FindAsync(id);
+            Cover cover = await _db.Covers.FindAsync(id);
             if (cover == null)
             {
                 return HttpNotFound();
@@ -132,8 +183,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(cover).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                _db.Entry(cover).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(cover);
@@ -146,7 +197,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Cover cover = await db.Covers.FindAsync(id);
+            Cover cover = await _db.Covers.FindAsync(id);
             if (cover == null)
             {
                 return HttpNotFound();
@@ -159,9 +210,9 @@ namespace BookPublish_WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Cover cover = await db.Covers.FindAsync(id);
-            db.Covers.Remove(cover);
-            await db.SaveChangesAsync();
+            Cover cover = await _db.Covers.FindAsync(id);
+            _db.Covers.Remove(cover);
+            await _db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
@@ -169,7 +220,7 @@ namespace BookPublish_WebApp.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

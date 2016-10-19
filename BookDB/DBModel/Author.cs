@@ -13,6 +13,7 @@ namespace bookPublishDB
         public int ID { get; set; }
         public string AuthorName { get; set; }
         public bool Active { get; set; }
+        public bool Delete { get; set; }
 
         [Required]
         public List<Books> Book { get; set; }

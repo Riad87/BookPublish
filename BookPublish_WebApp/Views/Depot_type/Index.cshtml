@@ -1,34 +1,77 @@
-﻿@model IEnumerable<bookPublishDB.Depot_type>
-
+﻿@model BookPublish_WebApp.Models.DepotTypeViewModel
+@using PagedList.Mvc;
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Raktár típusok";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Raktár típusok</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Type)
-        </th>
-        <th></th>
-    </tr>
+@using (Html.BeginForm())
+{
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Type)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
+    @Html.HiddenFor(m => m.TypeSort)
+    @Html.HiddenFor(m => m.CurrentFilter)
+    @Html.HiddenFor(m => m.SortOrder)
+
+    <div class="container-fluid">
+        @Html.TextBox("SearchString") <input class="col-xs-offset-3 col-xs-2" type="submit" value="Keresés" />
+    </div>
+
+    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
+        <tr>
+            <th>
+                #
+            </th>
+            <th align="center">
+                @Html.ActionLink("ID", "Index", new { sortOrder = Model.IDSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Raktár név", "Index", new { sortOrder = Model.TypeSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th align="center">
+                Találatok:
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                db\oldal
+            </th>
+        </tr>
+
+        @for (int i = 0; i < Model.Depot_type.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(model => model.Depot_type[i].ID)
+                    @Html.HiddenFor(model => model.Depot_type[i].Type)
+                    @Html.EditorFor(model => model.Depot_type[i].IsDeleted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Depot_type[i].ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Depot_type[i].Type)
+                </td>
+                <td>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Depot_type[i].ID }) </button>
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div class="container">
+        Page @Model.PageNumber of @Model.PageCount
+
+        @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+    </div>
+
+    <div class="container">
+
+        @*<button class="btn btn-default col-xs-offset-2 col-xs-2">@Html.ActionLink("Create New", "Create")</button>*@
+        <input class="btn btn-default col-xs-offset-2 col-xs-2" type="submit" value="Törlés" />
+
+    </div>
 }
-
-</table>
+@section scripts{
+    @Scripts.Render("~/bundles/jquery")
+}

@@ -8,18 +8,107 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using bookPublishDB;
+using BookPublish_WebApp.Models;
 
 namespace BookPublish_WebApp.Controllers
 {
+    [Authorize]
     public class Depot_typeController : Controller
     {
-        private BookContext db = new BookContext();
+        private BookContext _db = new BookContext();
 
         // GET: Depot_type
-        public async Task<ActionResult> Index()
+        [HttpGet]
+        public ActionResult Index(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
         {
-            return View(await db.Depot_types.ToListAsync());
+            var model = GetModel(sortorder, currentFilter, searchString, pagesize, page);
+
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Index(DepotTypeViewModel depotypeViewModel)
+        {
+            foreach (var depot_t in depotypeViewModel.Depot_type)
+            {
+                if (depot_t.IsDeleted == true)
+                {
+                    Depot_type d = (from x in _db.Depot_types
+                                where x.Type == depot_t.Type
+                                select x).First();
+                    d.Deleted = true;
+                    _db.SaveChanges();
+                }
+            }
+
+            var model = GetModel(depotypeViewModel.SortOrder, depotypeViewModel.CurrentFilter, null, depotypeViewModel.PageSize, null);
+
+            foreach (var depot_t in model.Depot_type)
+            {
+                depot_t.IsDeleted = false;
+            }
+
+            return View(model);
+        }
+
+        public DepotTypeViewModel GetModel(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
+        {
+            var model = new DepotTypeViewModel();
+
+            model.SortOrder = sortorder;
+                        
+            int defaultPageSize = pagesize.HasValue ? pagesize.Value : 10;
+
+            model.PageSize = defaultPageSize;
+
+            int actualPage = page.HasValue ? page.Value : 1;
+            model.PageNumber = actualPage;
+
+            model.TypeSort = String.IsNullOrEmpty(model.SortOrder) ? "type_desc" : "";
+            model.IDSort = model.SortOrder == "id_asc" ? "id_desc" : "id_asc";
+
+            if (searchString != null)
+                page = 1;
+            else
+                searchString = currentFilter;
+
+            model.CurrentFilter = searchString;
+
+            var depot_t = from d in _db.Depot_types
+                          where d.Deleted != true
+                          select d;
+
+            model.AllDepotTypesCount = depot_t.Count();
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                depot_t = depot_t.Where(s => s.Type.Contains(searchString));
+            }
+
+            switch (sortorder)
+            {
+                case "name_desc":
+                    depot_t = depot_t.OrderByDescending(s => s.Type);
+                    break;
+                case "asc":
+                    depot_t = depot_t.OrderBy(s => s.ID);
+                    break;
+                case "act_desc":
+                    depot_t = depot_t.OrderByDescending(s => s.ID);
+                    break;
+                default:
+                    depot_t = depot_t.OrderBy(s => s.Type);
+                    break;
+            }
+
+            int pageNumber = (page ?? 1);
+            model.PageNumber = pageNumber;
+
+            model.Depot_type = depot_t.Skip((actualPage - 1) * defaultPageSize).Take(defaultPageSize).ToList();
+
+            return model;
+        }
+
 
         // GET: Depot_type/Details/5
         public async Task<ActionResult> Details(int? id)
@@ -28,7 +117,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Depot_type depot_type = await db.Depot_types.FindAsync(id);
+            Depot_type depot_type = await _db.Depot_types.FindAsync(id);
             if (depot_type == null)
             {
                 return HttpNotFound();
@@ -51,8 +140,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Depot_types.Add(depot_type);
-                await db.SaveChangesAsync();
+                _db.Depot_types.Add(depot_type);
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
@@ -66,7 +155,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Depot_type depot_type = await db.Depot_types.FindAsync(id);
+            Depot_type depot_type = await _db.Depot_types.FindAsync(id);
             if (depot_type == null)
             {
                 return HttpNotFound();
@@ -83,8 +172,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(depot_type).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                _db.Entry(depot_type).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(depot_type);
@@ -97,7 +186,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Depot_type depot_type = await db.Depot_types.FindAsync(id);
+            Depot_type depot_type = await _db.Depot_types.FindAsync(id);
             if (depot_type == null)
             {
                 return HttpNotFound();
@@ -110,9 +199,9 @@ namespace BookPublish_WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Depot_type depot_type = await db.Depot_types.FindAsync(id);
-            db.Depot_types.Remove(depot_type);
-            await db.SaveChangesAsync();
+            Depot_type depot_type = await _db.Depot_types.FindAsync(id);
+            _db.Depot_types.Remove(depot_type);
+            await _db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
@@ -120,7 +209,7 @@ namespace BookPublish_WebApp.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

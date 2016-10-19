@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,8 +19,13 @@ namespace bookPublishDB
         [Required]  
         public Partner Partner { get; set; }
         public double Discount { get; set; }
+        public bool Active { get; set; }
+        public bool Deleted { get; set; }
 
         public List<Depot> Depot { get; set; }
+
+        [NotMapped]
+        public bool IsDeleted { get; set; }
 
 
     }

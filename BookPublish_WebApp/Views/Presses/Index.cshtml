@@ -1,64 +1,101 @@
-﻿@model IEnumerable<bookPublishDB.Press>
+﻿@model BookPublish_WebApp.Models.PressesViewModel
+@using PagedList.Mvc;
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Nyomdák";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Nyomdák</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.City)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Address)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Zip)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Country)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Active)
-        </th>
-        <th></th>
-    </tr>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.NameSort)
+    @Html.HiddenFor(m => m.CurrentFilter)
+    @Html.HiddenFor(m => m.SortOrder)
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.City)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Address)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Zip)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Country)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Active)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
+    <div class="container-fluid">
+        @Html.Label("Keresés: ")
+        @Html.TextBox("SearchString")
+    </div>
+    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
+        <tr>
+            <th> # </th>
+            <th>
+                @Html.ActionLink("Nyomda neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Ország", "Index", new { sortOrder = Model.CountrySort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Irányítószám", "Index", new { sortOrder = Model.ZipSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Város", "Index", new { sortOrder = Model.CitySort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Cím", "Index", new { sortOrder = Model.AddressSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Aktív-e", "Index", new { sortOrder = Model.ActiveSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                Találatok:
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                db/oldal
+            </th>
+        </tr>
+
+
+        @for (int i = 0; i < Model.Presses.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(model => model.Presses[i].ID)
+                    @Html.HiddenFor(model => model.Presses[i].Name)
+                    @Html.HiddenFor(model => model.Presses[i].City)
+                    @Html.HiddenFor(model => model.Presses[i].Address)
+                    @Html.HiddenFor(model => model.Presses[i].Zip)
+                    @Html.HiddenFor(model => model.Presses[i].Country)
+                    @Html.HiddenFor(model => model.Presses[i].Active)
+                    @Html.EditorFor(model => model.Presses[i].IsDeleted)
+                </td>
+
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Presses[i].Name)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Presses[i].Country)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Presses[i].Zip)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Presses[i].City)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Presses[i].Address)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Presses[i].Active)
+                </td>
+                <td>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Presses[i].ID })</button>
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div class="container">
+        Page @Model.PageNumber of @Model.PageCount
+
+        @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+    </div>
+    <div class="container">
+        <input type="submit" value="Törlés" />
+    </div>
+
 }
-
-</table>

@@ -8,17 +8,131 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using bookPublishDB;
+using BookPublish_WebApp.Models;
 
 namespace BookPublish_WebApp.Controllers
 {
+    [Authorize]
     public class DepotsController : Controller
     {
-        private BookContext db = new BookContext();
+        private BookContext _db = new BookContext();
 
         // GET: Depots
-        public async Task<ActionResult> Index()
+        [HttpGet]
+        public ActionResult Index(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
         {
-            return View(await db.Depots.ToListAsync());
+            var model = GetModel(sortorder, currentFilter, searchString, pagesize, page);
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public ActionResult Index(DepotsViewModel depotsViewModel)
+        {
+            foreach (var depot in depotsViewModel.Depots)
+            {
+                if (depot.IsDeleted == true)
+                {
+                    Depot d = _db.Depots
+                               .Where(x => x.ID == depot.ID)
+                               .Include(t => t.Type).First();
+
+                    d.Deleted = true;
+                    _db.SaveChanges();
+                }
+            }
+
+            var model = GetModel(depotsViewModel.SortOrder, depotsViewModel.CurrentFilter, null, depotsViewModel.PageSize, null);
+
+            foreach (var depot in model.Depots)
+            {
+                depot.IsDeleted = false;
+            }
+
+            return View(model);
+        }
+
+        public DepotsViewModel GetModel(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
+        {
+            var model = new DepotsViewModel();
+
+            model.SortOrder = sortorder;
+
+            //TODO: egyszerűsíteni
+            int defaultPageSize = pagesize.HasValue ? pagesize.Value : 10;
+
+            model.PageSize = defaultPageSize;
+
+            int actualPage = page.HasValue ? page.Value : 1;
+            model.PageNumber = actualPage;
+
+            model.NameSort = String.IsNullOrEmpty(model.SortOrder) ? "name_desc" : "";
+            model.CitySort = model.SortOrder == "city_asc" ? "city_desc" : "city_asc";
+            model.AddressSort = model.AddressSort == "addr_asc" ? "addr_desc" : "addr_asc";
+            model.ZipSort = model.ZipSort == "zip_asc" ? "zip_desc" : "zip_asc";
+            model.TypeSort = model.TypeSort == "type_asc" ? "type_desc" : "type_asc";
+
+            if (searchString != null)
+                page = 1;
+            else
+                searchString = currentFilter;
+
+
+            model.CurrentFilter = searchString;
+
+            var depots = _db.Depots
+                         .Where(d => d.Deleted != true)
+                         .Include(t => t.Type);
+                        
+
+            model.AllDepotsCount = depots.Count();
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                depots = depots.Where(s => s.Depot_Name.Contains(searchString));
+            }
+
+            switch (sortorder)
+            {
+                case "name_desc":
+                    depots = depots.OrderByDescending(s => s.Depot_Name);
+                    break;
+                case "city_asc":
+                    depots = depots.OrderBy(s => s.City);
+                    break;
+                case "city_desc":
+                    depots = depots.OrderByDescending(s => s.City);
+                    break;
+                case "addr_asc":
+                    depots = depots.OrderBy(s => s.Address);
+                    break;
+                case "addr_desc":
+                    depots = depots.OrderByDescending(s => s.Address);
+                    break;
+                case "zip_asc":
+                    depots = depots.OrderBy(s => s.Zip);
+                    break;
+                case "zip_desc":
+                    depots = depots.OrderByDescending(s => s.Zip);
+                    break;
+                case "type_asc":
+                    depots = depots.OrderBy(s => s.Type.Type);
+                    break;
+                case "type_desc":
+                    depots = depots.OrderByDescending(s => s.Type.Type);
+                    break;
+                default:
+                    depots = depots.OrderBy(s => s.Depot_Name);
+                    break;
+            }
+
+            int pageNumber = (page ?? 1);
+            model.PageNumber = pageNumber;
+
+            model.Depots = depots.Skip((actualPage - 1) * defaultPageSize).Take(defaultPageSize).ToList();
+
+            return model;
         }
 
         // GET: Depots/Details/5
@@ -28,7 +142,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Depot depot = await db.Depots.FindAsync(id);
+            Depot depot = await _db.Depots.FindAsync(id);
             if (depot == null)
             {
                 return HttpNotFound();
@@ -51,8 +165,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Depots.Add(depot);
-                await db.SaveChangesAsync();
+                _db.Depots.Add(depot);
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
@@ -66,7 +180,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Depot depot = await db.Depots.FindAsync(id);
+            Depot depot = await _db.Depots.FindAsync(id);
             if (depot == null)
             {
                 return HttpNotFound();
@@ -83,8 +197,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(depot).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                _db.Entry(depot).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(depot);
@@ -97,7 +211,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Depot depot = await db.Depots.FindAsync(id);
+            Depot depot = await _db.Depots.FindAsync(id);
             if (depot == null)
             {
                 return HttpNotFound();
@@ -110,9 +224,9 @@ namespace BookPublish_WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Depot depot = await db.Depots.FindAsync(id);
-            db.Depots.Remove(depot);
-            await db.SaveChangesAsync();
+            Depot depot = await _db.Depots.FindAsync(id);
+            _db.Depots.Remove(depot);
+            await _db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
@@ -120,7 +234,7 @@ namespace BookPublish_WebApp.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

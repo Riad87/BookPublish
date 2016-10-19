@@ -1,46 +1,73 @@
-﻿@model IEnumerable<bookPublishDB.Partner>
+﻿@model BookPublish_WebApp.Models.PartnersViewModel
+@using PagedList.Mvc;
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Partnerek";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Partnerek</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.AccountType.Details)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Active)
-        </th>
-        <th></th>
-    </tr>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.NameSort)
+    @Html.HiddenFor(m => m.CurrentFilter)
+    @Html.HiddenFor(m => m.SortOrder)
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.AccountType.Details)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Active)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
+    <div class="container-fluid">
+        @Html.Label("Keresés: ")
+        @Html.TextBox("SearchString")
+    </div>
+    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
+        <tr>
+            <th> # </th>
+            <th>
+                @Html.ActionLink("Partner neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Active-e", "Index", new { sortOrder = Model.ActiveSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                Találatok:
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                db/oldal
+            </th>
+        </tr>
+
+
+        @for (int i = 0; i < Model.Partners.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(model => model.Partners[i].ID)
+                    @Html.HiddenFor(model => model.Partners[i].Name)
+                    @Html.HiddenFor(model => model.Partners[i].Active)
+                    @Html.EditorFor(model => model.Partners[i].IsDeleted)
+                </td>
+
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Partners[i].Name)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Partners[i].Active)
+                </td>
+                <td>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Partners[i].ID })</button>
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div class="container">
+        Page @Model.PageNumber of @Model.PageCount
+
+        @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+    </div>
+    <div class="container">
+        <input type="submit" value="Törlés" />
+    </div>
+
 }
-
-</table>

@@ -1,46 +1,105 @@
-﻿@model IEnumerable<bookPublishDB.Pressure>
+﻿@model BookPublish_WebApp.Models.PressuresViewModel
+@using PagedList.Mvc;
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Nyomások";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h2>Nyomdába küldött igények</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AfterPressure)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Quantity)
-        </th>
-        <th></th>
-    </tr>
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.IDSort)
+    @Html.HiddenFor(m => m.OrderSort)
+    @Html.HiddenFor(m => m.AfterPressureSort)
+    @Html.HiddenFor(m => m.QuantitySort)
+    @Html.HiddenFor(m => m.BookSort)
+    @Html.HiddenFor(m => m.PressSort)
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.OrderDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AfterPressure)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Quantity)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
+    <div class="container-fluid">
+        @Html.Label("Keresés: ")
+        @Html.TextBox("SearchString")
+    </div>
+    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
+        <tr>
+            <th> # </th>
+            <th>
+                @Html.ActionLink("ID", "Index", new { sortOrder = Model.IDSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Könyv címe", "Index", new { sortOrder = Model.BookSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Nyomda neve", "Index", new { sortOrder = Model.PressSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Rendelés dátuma", "Index", new { sortOrder = Model.OrderSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Utánnyomás", "Index", new { sortOrder = Model.AfterPressureSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Mennyiség", "Index", new { sortOrder = Model.QuantitySort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                Találatok:
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                db/oldal
+            </th>
+        </tr>
+
+
+        @for (int i = 0; i < Model.Pressures.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(model => model.Pressures[i].ID)
+                    @Html.HiddenFor(model => model.Pressures[i].Book)
+                    @Html.HiddenFor(model => model.Pressures[i].Press)
+                    @Html.HiddenFor(model => model.Pressures[i].OrderDate)
+                    @Html.HiddenFor(model => model.Pressures[i].AfterPressure)
+                    @Html.HiddenFor(model => model.Pressures[i].Quantity)
+                    @Html.EditorFor(model => model.Pressures[i].IsDeleted)
+                </td>
+
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Pressures[i].ID)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Pressures[i].Book.Name)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Pressures[i].Press.Name)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Pressures[i].OrderDate)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Pressures[i].AfterPressure)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Pressures[i].Quantity)
+                </td>
+                <td>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Pressures[i].ID })</button>
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div class="container">
+        Page @Model.PageNumber of @Model.PageCount
+
+        @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                 page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+    </div>
+    <div class="container">
+        <input type="submit" value="Törlés" />
+    </div>
+
 }
 
-</table>
+

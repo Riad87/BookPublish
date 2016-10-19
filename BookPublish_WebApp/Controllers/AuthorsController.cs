@@ -9,62 +9,108 @@ using System.Web;
 using System.Web.Mvc;
 using PagedList;
 using bookPublishDB;
+using BookPublish_WebApp.Models;
+
 
 namespace BookPublish_WebApp.Controllers
 {
+    [Authorize]
     public class AuthorsController : Controller
     {
-        private BookContext db = new BookContext();
+        private BookContext _db = new BookContext();
 
-        // GET: Authors
-        [Authorize]
-        public ViewResult Index(string sortorder, string currentFilter, string searchString,int? pagesize, int? page)
+        // GET: Authors   
+        [HttpGet]        
+        public ActionResult Index(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
         {
-            ViewBag.CurrentSort = sortorder;
-            ViewBag.PageSize = pagesize;
-            int? DefaultPageSize = 10;
-            if (pagesize != null)
+            var model = GetModel(sortorder, currentFilter, searchString, pagesize, page);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Index(AuthorsViewModel authorsViewModel)
+        {            
+            foreach (var author in authorsViewModel.Authors)
             {
-                DefaultPageSize = pagesize;
+                if (author.IsDeleted == true)
+                {
+                    Author a = (from x in _db.Authors
+                                where x.AuthorName == author.AuthorName
+                                select x).First();
+                    a.Delete = true;
+                    _db.SaveChanges();
+                }
             }
-            ViewBag.NameSort = String.IsNullOrEmpty(sortorder) ? "name_desc" : "";
-            ViewBag.ActiveSort = sortorder == "active" ? "act_desc" : "active";
+
+            var model = GetModel(authorsViewModel.SortOrder, authorsViewModel.CurrentFilter, null, authorsViewModel.PageSize, null);
+
+            foreach (var author in model.Authors)
+            {
+                author.IsDeleted = false;
+            }
+
+            return View(model);
+        }
+           
+        public AuthorsViewModel GetModel(string sortorder, string currentFilter, string searchString,int? pagesize, int? page)
+        {
+            var model = new AuthorsViewModel();
+
+            model.SortOrder = sortorder;
+
+            //TODO: egyszerűsíteni
+            int defaultPageSize = pagesize.HasValue ? pagesize.Value : 10;
+
+            model.PageSize = defaultPageSize;
+
+            int actualPage = page.HasValue ? page.Value : 1;
+            model.PageNumber = actualPage;
+
+            model.NameSort = String.IsNullOrEmpty(model.SortOrder) ? "name_desc" : "";
+            model.ActiveSort = model.SortOrder == "active" ? "act_desc" : "active";
 
             if (searchString != null)
                 page = 1;
             else
                 searchString = currentFilter;
 
-            
-            ViewBag.CurrentFilter = searchString;
 
-            var Authors = from a in db.Authors
+            model.CurrentFilter = searchString;
+
+            var authors = from a in _db.Authors
+                          where a.Delete != true
                           select a;
+
+            model.AllAuthorCount = authors.Count();
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                Authors = Authors.Where(s => s.AuthorName.Contains(searchString));
+                authors = authors.Where(s => s.AuthorName.Contains(searchString));
             }
 
             switch (sortorder)
             {
                 case "name_desc":
-                    Authors = Authors.OrderByDescending(s => s.AuthorName);
+                    authors = authors.OrderByDescending(s => s.AuthorName);
                     break;
                 case "active":
-                    Authors = Authors.OrderBy(s => s.Active);
+                    authors = authors.OrderBy(s => s.Active);
                     break;
                 case "act_desc":
-                    Authors = Authors.OrderByDescending(s => s.Active);
+                    authors = authors.OrderByDescending(s => s.Active);
                     break;
                 default:
-                    Authors = Authors.OrderBy(s => s.AuthorName);
+                    authors = authors.OrderBy(s => s.AuthorName);
                     break;
             }
 
             int pageNumber = (page ?? 1);
+            model.PageNumber = pageNumber;
 
-            return View(Authors.ToPagedList(pageNumber,(int)DefaultPageSize));
+            model.Authors = authors.Skip((actualPage - 1) * defaultPageSize).Take(defaultPageSize).ToList();
+
+            return model;
         }
 
         // GET: Authors/Details/5
@@ -75,7 +121,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Author author = await db.Authors.FindAsync(id);
+            Author author = await _db.Authors.FindAsync(id);
             if (author == null)
             {
                 return HttpNotFound();
@@ -99,8 +145,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Authors.Add(author);
-                await db.SaveChangesAsync();
+                _db.Authors.Add(author);
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
@@ -114,7 +160,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Author author = await db.Authors.FindAsync(id);
+            Author author = await _db.Authors.FindAsync(id);
             if (author == null)
             {
                 return HttpNotFound();
@@ -131,8 +177,8 @@ namespace BookPublish_WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(author).State = EntityState.Modified;
-                await db.SaveChangesAsync();
+                _db.Entry(author).State = EntityState.Modified;
+                await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(author);
@@ -145,7 +191,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Author author = await db.Authors.FindAsync(id);
+            Author author = await _db.Authors.FindAsync(id);
             if (author == null)
             {
                 return HttpNotFound();
@@ -156,15 +202,15 @@ namespace BookPublish_WebApp.Controllers
         // POST: Authors/Delete/5
         [HttpPost]
         [Authorize]
-        public ActionResult DeleteConfirmed()
+        public ActionResult DeleteConfirmed(PagedList<Author> m)
         {
-            var forDelete = db.Authors
+            var forDelete =m
                 .OrderByDescending(x => x.AuthorName)
                 .ToList()
                 .Where(x => x.IsDeleted == true);             
 
-            db.Authors.RemoveRange(forDelete);
-            db.SaveChanges();
+            _db.Authors.RemoveRange(forDelete);
+            _db.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -173,7 +219,7 @@ namespace BookPublish_WebApp.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }
