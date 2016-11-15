@@ -41,7 +41,6 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
@@ -133,6 +132,18 @@
     <Compile Include="Migrations\201610161621318_bookstock2.Designer.cs">
       <DependentUpon>201610161621318_bookstock2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201610221407412_depot_pressure_Fk.cs" />
+    <Compile Include="Migrations\201610221407412_depot_pressure_Fk.Designer.cs">
+      <DependentUpon>201610221407412_depot_pressure_Fk.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610231543504_depot_Stockist_delete.cs" />
+    <Compile Include="Migrations\201610231543504_depot_Stockist_delete.Designer.cs">
+      <DependentUpon>201610231543504_depot_Stockist_delete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610261153243_authorname_required.cs" />
+    <Compile Include="Migrations\201610261153243_authorname_required.Designer.cs">
+      <DependentUpon>201610261153243_authorname_required.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -194,6 +205,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201610161621318_bookstock2.resx">
       <DependentUpon>201610161621318_bookstock2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610221407412_depot_pressure_Fk.resx">
+      <DependentUpon>201610221407412_depot_pressure_Fk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610231543504_depot_Stockist_delete.resx">
+      <DependentUpon>201610231543504_depot_Stockist_delete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610261153243_authorname_required.resx">
+      <DependentUpon>201610261153243_authorname_required.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

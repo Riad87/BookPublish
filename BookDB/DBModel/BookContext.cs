@@ -17,7 +17,7 @@ namespace bookPublishDB
         public DbSet<Depot> Depots { get; set; }
         public DbSet<Depot_type> Depot_types { get; set; }
         public DbSet<Partner> Partners { get; set; }
-        public DbSet<Press> Presses { get; set; }
+        public DbSet<Press> Press { get; set; }
         public DbSet<Pressure> Pressure { get; set; }
         public DbSet<Stockist_margin> Stockist_margins { get; set; }
         public DbSet<Theme> Themes { get; set; }

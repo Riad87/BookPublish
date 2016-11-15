@@ -43,7 +43,7 @@ namespace bookPublishDB
         public Cover Cover { get; set; }
         
         public Theme Theme { get; set; }
-        public Depot Depot { get; set; }
+        
 
     }
 }

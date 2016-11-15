@@ -19,6 +19,8 @@ namespace bookPublishDB
         public int NotSold { get; set; }
         public bool Deleted { get; set; }
 
+        public Depot Depot { get; set; }
+
         [NotMapped]
         public bool IsDeleted { get; set; }
 

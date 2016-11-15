@@ -11,7 +11,7 @@ namespace bookPublishDB
     {
         public Stockist_margin()
         {
-            Depot = new List<Depot>();
+          
         }
 
         public int ID { get; set; }   
@@ -21,8 +21,7 @@ namespace bookPublishDB
         public double Discount { get; set; }
         public bool Active { get; set; }
         public bool Deleted { get; set; }
-
-        public List<Depot> Depot { get; set; }
+       
 
         [NotMapped]
         public bool IsDeleted { get; set; }

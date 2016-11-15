@@ -11,6 +11,7 @@ namespace bookPublishDB
             Book = new List<Books>();
         }
         public int ID { get; set; }
+        [Required]
         public string AuthorName { get; set; }
         public bool Active { get; set; }
         public bool Delete { get; set; }
