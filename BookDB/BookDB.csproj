@@ -54,11 +54,15 @@
     <Compile Include="DBModel\AccountType.cs" />
     <Compile Include="DBModel\Author.cs" />
     <Compile Include="DBModel\BookContext.cs" />
+    <Compile Include="DBModel\BookPublishRepository.cs" />
     <Compile Include="DBModel\BookRepository.cs" />
     <Compile Include="DBModel\Books.cs" />
     <Compile Include="DBModel\Cover.cs" />
     <Compile Include="DBModel\Depot.cs" />
     <Compile Include="DBModel\Depot_type.cs" />
+    <Compile Include="DBModel\HomeRepository.cs" />
+    <Compile Include="DBModel\IBookPublishContext.cs" />
+    <Compile Include="DBModel\Logs.cs" />
     <Compile Include="DBModel\Partner.cs" />
     <Compile Include="DBModel\Press.cs" />
     <Compile Include="DBModel\Pressure.cs" />
@@ -144,6 +148,58 @@
     <Compile Include="Migrations\201610261153243_authorname_required.Designer.cs">
       <DependentUpon>201610261153243_authorname_required.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201611152156288_press.cs" />
+    <Compile Include="Migrations\201611152156288_press.Designer.cs">
+      <DependentUpon>201611152156288_press.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611202102173_szamlaszam.cs" />
+    <Compile Include="Migrations\201611202102173_szamlaszam.Designer.cs">
+      <DependentUpon>201611202102173_szamlaszam.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702101003326_depotmodify.cs" />
+    <Compile Include="Migrations\201702101003326_depotmodify.Designer.cs">
+      <DependentUpon>201702101003326_depotmodify.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702131302192_coveractivebool.cs" />
+    <Compile Include="Migrations\201702131302192_coveractivebool.Designer.cs">
+      <DependentUpon>201702131302192_coveractivebool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702132120483_pressactivebool.cs" />
+    <Compile Include="Migrations\201702132120483_pressactivebool.Designer.cs">
+      <DependentUpon>201702132120483_pressactivebool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702192030239_themebool.cs" />
+    <Compile Include="Migrations\201702192030239_themebool.Designer.cs">
+      <DependentUpon>201702192030239_themebool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703061034417_requiredDepot.cs" />
+    <Compile Include="Migrations\201703061034417_requiredDepot.Designer.cs">
+      <DependentUpon>201703061034417_requiredDepot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703070916484_pressreq.cs" />
+    <Compile Include="Migrations\201703070916484_pressreq.Designer.cs">
+      <DependentUpon>201703070916484_pressreq.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703070940115_pressactive.cs" />
+    <Compile Include="Migrations\201703070940115_pressactive.Designer.cs">
+      <DependentUpon>201703070940115_pressactive.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703070959037_partnersreq.cs" />
+    <Compile Include="Migrations\201703070959037_partnersreq.Designer.cs">
+      <DependentUpon>201703070959037_partnersreq.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703131608395_logtable.cs" />
+    <Compile Include="Migrations\201703131608395_logtable.Designer.cs">
+      <DependentUpon>201703131608395_logtable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703131610376_logtable1.cs" />
+    <Compile Include="Migrations\201703131610376_logtable1.Designer.cs">
+      <DependentUpon>201703131610376_logtable1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201703131612145_logtableaction.cs" />
+    <Compile Include="Migrations\201703131612145_logtableaction.Designer.cs">
+      <DependentUpon>201703131612145_logtableaction.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -214,6 +270,45 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201610261153243_authorname_required.resx">
       <DependentUpon>201610261153243_authorname_required.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611152156288_press.resx">
+      <DependentUpon>201611152156288_press.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611202102173_szamlaszam.resx">
+      <DependentUpon>201611202102173_szamlaszam.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702101003326_depotmodify.resx">
+      <DependentUpon>201702101003326_depotmodify.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702131302192_coveractivebool.resx">
+      <DependentUpon>201702131302192_coveractivebool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702132120483_pressactivebool.resx">
+      <DependentUpon>201702132120483_pressactivebool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702192030239_themebool.resx">
+      <DependentUpon>201702192030239_themebool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703061034417_requiredDepot.resx">
+      <DependentUpon>201703061034417_requiredDepot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703070916484_pressreq.resx">
+      <DependentUpon>201703070916484_pressreq.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703070940115_pressactive.resx">
+      <DependentUpon>201703070940115_pressactive.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703070959037_partnersreq.resx">
+      <DependentUpon>201703070959037_partnersreq.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703131608395_logtable.resx">
+      <DependentUpon>201703131608395_logtable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703131610376_logtable1.resx">
+      <DependentUpon>201703131610376_logtable1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703131612145_logtableaction.resx">
+      <DependentUpon>201703131612145_logtableaction.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

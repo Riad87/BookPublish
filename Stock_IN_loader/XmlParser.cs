@@ -10,7 +10,7 @@ namespace Stock_IN_loader
     class XmlParser
     {
         string path;
-        private BookRepository db = new BookRepository();
+        private BookRepository _db = new BookRepository();
 
         public XmlParser(string path)
         {
@@ -41,7 +41,7 @@ namespace Stock_IN_loader
                     book.GrossValue = int.Parse(item.Element("GrossValue").Value);
                     book.ValidFrom = DateTime.ParseExact(item.Element("ValidFrom").Value, "yyyy-mm-dd", System.Globalization.CultureInfo.InvariantCulture);
                     book.ValidTo = DateTime.ParseExact(item.Element("ValidTo").Value, "yyyy-mm-dd", System.Globalization.CultureInfo.InvariantCulture);
-                    book.Author = db.GetAuthor(int.Parse(item.Element("Author_ID").Value));
+                    book.Author = _db.GetAuthor((int.Parse(item.Element("Author_ID").Value)));
                     //Console.WriteLine(book.ValidTo.ToString());
 
                     SaveData(book);
@@ -64,9 +64,9 @@ namespace Stock_IN_loader
         {
             try
             {                
-                if (db.BookIsExists(book.ISBN))
+                if (_db.BookIsExists(book.ISBN))
                 {
-                    db.SaveBooks(book);
+                    _db.SaveBooks(book);
                     Console.WriteLine("Mentés sikeres.");
                 }
                 else

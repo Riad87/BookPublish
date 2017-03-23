@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using PagedList;
 using bookPublishDB;
 using BookPublish_WebApp.Models;
-using System.Diagnostics;
 using System.Data.Entity.Validation;
-using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace BookPublish_WebApp.Controllers
 {
@@ -31,7 +28,7 @@ namespace BookPublish_WebApp.Controllers
         [HttpPost]
         public ActionResult Index(BooksViewModel booksViewModel)
         {
-            //TODO: logikai törlés
+
             foreach (var book in booksViewModel.Books)
             {
                 if (book.IsDeleted == true)
@@ -39,11 +36,13 @@ namespace BookPublish_WebApp.Controllers
                     try
                     {
                         Books b = _db.Books
-                                   .Where(x => x.ID == book.ID)
-                                   .Include(a => a.Author).First();
+                                       .Where(x => x.ID == book.ID)
+                                       .Include(a => a.Author).First();
+
                         b.Deleted = true;
                         _db.SaveChanges();
                     }
+
                     catch (DbEntityValidationException dbEx)
                     {
                         foreach (var validationErrors in dbEx.EntityValidationErrors)
@@ -80,37 +79,43 @@ namespace BookPublish_WebApp.Controllers
 
             int actualPage = page.HasValue ? page.Value : 1;
 
-            //model.CurrentPageSize
             model.NameSort = String.IsNullOrEmpty(sortorder) ? "name_desc" : "";
-            model.ISBN = sortorder == "isbn" ? "isbn_desc" : "isbn";
-            model.ItemNum = sortorder == "item" ? "item_desc" : "item";
-            model.NetValue = sortorder == "netV" ? "netV_desc" : "netV";
-            model.Vat = sortorder == "Vat" ? "Vat_desc" : "Vat";
-            model.GrossValue = sortorder == "GrossValue" ? "GrossValue_desc" : "GrossValue";
-            model.ValidFrom = sortorder == "ValidFrom" ? "ValidFrom_desc" : "ValidFrom";
-            model.ValidTo = sortorder == "ValidTo" ? "ValidTo_desc" : "ValidTo";
+            model.ISBNSort = sortorder == "isbn" ? "isbn_desc" : "isbn";
+            model.ItemNumSort = sortorder == "item" ? "item_desc" : "item";
+            model.NetValueSort = sortorder == "netV" ? "netV_desc" : "netV";
+            model.VatSort = sortorder == "Vat" ? "Vat_desc" : "Vat";
+            model.GrossValueSort = sortorder == "GrossValue" ? "GrossValue_desc" : "GrossValue";
+            model.ValidFromSort = sortorder == "ValidFrom" ? "ValidFrom_desc" : "ValidFrom";
+            model.ValidToSort = sortorder == "ValidTo" ? "ValidTo_desc" : "ValidTo";
+            model.CoverTypeSort = sortorder == "Cover_asc" ? "Cover_desc" : "Cover_asc";
+            model.ThemeTypeSort = sortorder == "Theme_asc" ? "Theme_desc" : "Theme_asc";
+            model.AuthorNameSort = sortorder == "Author_asc" ? "Author_desc" : "Author_asc";
 
             if (searchString != null)
                 page = 1;
             else
                 searchString = currentFilter;
 
-
             model.CurrentFilter = searchString;
 
-            //var books = _db.Books
-            //            .Join(_db.Pressure, b => b.ID, p => p.ID, (b, p) => new { Books = b, Pressure = p })
-            //            .Where(bp => bp.Books.ID == bp.Pressure.Book.ID)
-            //            .Include(a => a.Author);
+            //IEnumerable<SelectedListItem> authors = _db.Authors
+            //              .Where(a => a.Delete != true)
+            //              .Select(a=> new SelectedListItem { Text = a.AuthorName.ToString(), Value = a.ID }).ToList();
+
+            model.AuthorsName = new SelectList(_db.Authors.Where(a => a.Delete != true), "ID", "AuthorName", 0);
+
+            model.CoverNames = new SelectList(_db.Covers.Where(c => c.Deleted != true), "ID", "CoverName", 0);
+
+            model.ThemeNames = new SelectList(_db.Themes.Where(c => c.Deleted != true), "ID", "ThemeName", 0);
 
             var books = _db.Books
                         .Include(a => a.Author)
+                        .Include(c => c.Cover)
+                        .Include(t => t.Theme)
                         .Where(b => b.Deleted != true);
-                        
 
-            model.AllBooksCount = books.Count();            
 
-            //model.Quantity = _db.Database.ExecuteSqlCommand("GetBookQuantity",new SqlParameter("@BookID",4));
+            model.AllBooksCount = books.Count();
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -164,6 +169,24 @@ namespace BookPublish_WebApp.Controllers
                 case "ValidTo_desc":
                     books = books.OrderByDescending(s => s.ValidTo);
                     break;
+                case "Cover_asc":
+                    books = books.OrderBy(s => s.Cover.CoverName);
+                    break;
+                case "Cover_desc":
+                    books = books.OrderByDescending(s => s.Cover.CoverName);
+                    break;
+                case "Theme_asc":
+                    books = books.OrderBy(s => s.Theme.ThemeName);
+                    break;
+                case "Theme_desc":
+                    books = books.OrderByDescending(s => s.Theme.ThemeName);
+                    break;
+                case "Author_asc":
+                    books = books.OrderBy(s => s.Author.AuthorName);
+                    break;
+                case "Author_desc":
+                    books = books.OrderByDescending(s => s.Author.AuthorName);
+                    break;
                 default:
                     books = books.OrderBy(s => s.Name);
                     break;
@@ -186,7 +209,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Books books = (Books)_db.Books.Include(n => n.Author);
+            Books books = _db.Books.Find(id);
             if (books == null)
             {
                 return HttpNotFound();
@@ -206,16 +229,30 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,ISBN,Name,ItemNumber,NetValue,Vat,GrossValue,ValidFrom,ValidTo")] Books books)
+        public ActionResult Create([Bind(Include = "ISBN,Name,SelectedAuthorID,SelectedCoverID,SelectedThemeID,ItemNumber,NetValue,Vat,GrossValue,ValidFrom,ValidTo")] BooksViewModel viewmodel)
         {
+            Books book = new Books();
+
+            book.ISBN = viewmodel.ISBN.ToString();
+            book.Name = viewmodel.Name;
+            book.Author = _db.Authors.Find(viewmodel.SelectedAuthorID);
+            book.Cover = _db.Covers.Find(viewmodel.SelectedCoverID);
+            book.Theme = _db.Themes.Find(viewmodel.SelectedThemeID);
+            book.ItemNumber = viewmodel.ItemNumber;
+            book.NetValue = viewmodel.NetValue;
+            book.Vat = viewmodel.Vat;
+            book.GrossValue = viewmodel.GrossValue;
+            book.ValidFrom = (DateTime)viewmodel.ValidFrom;
+            book.ValidTo = (DateTime)viewmodel.ValidTo;
+
             if (ModelState.IsValid)
             {
-                _db.Books.Add(books);
+                _db.Books.Add(book);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(books);
+            return View(book);
         }
 
         // GET: Books/Edit/5
@@ -225,12 +262,41 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Books books = _db.Books.Find(id);
-            if (books == null)
+
+            var book = _db.Books.Where(b => b.ID == id)
+                        .Include(a => a.Author)
+                        .Include(c => c.Cover)
+                        .Include(t => t.Theme).FirstOrDefault();
+
+            if (book == null)
             {
                 return HttpNotFound();
             }
-            return View(books);
+            int selectedAuthorID = book.Author == null ? 0 : book.Author.ID;
+            int selectedCoverID = book.Cover == null ? 0 : book.Cover.ID;
+            int selectedThemeID = book.Theme == null ? 0 : book.Theme.ID;
+
+            var booksview = new BooksViewModel();
+            booksview.Name = book.Name;
+            booksview.ISBN = book.ISBN;
+            booksview.ItemNumber = book.ItemNumber;
+            booksview.NetValue = book.NetValue;
+            booksview.Vat = book.Vat;
+            booksview.GrossValue = book.GrossValue;
+            booksview.ValidFrom = book.ValidFrom;
+            booksview.ValidTo = book.ValidTo;
+            booksview.Deleted = book.Deleted;
+            booksview.SelectedAuthorID = selectedAuthorID;
+            booksview.SelectedCoverID = selectedCoverID;
+            booksview.SelectedThemeID = selectedThemeID;
+
+            booksview.AuthorsName = new SelectList(_db.Authors, "ID", "AuthorName", selectedAuthorID);
+
+            booksview.CoverNames = new SelectList(_db.Covers, "ID", "CoverName", selectedCoverID);
+
+            booksview.ThemeNames = new SelectList(_db.Themes, "ID", "ThemeName", selectedThemeID);
+
+            return PartialView("_partialEdit", booksview);
         }
 
         // POST: Books/Edit/5
@@ -238,15 +304,36 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,ISBN,Name,ItemNumber,NetValue,Vat,GrossValue,ValidFrom,ValidTo")] Books books)
+        public ActionResult Edit([Bind(Include = "ID,ISBN,Name,ItemNumber,NetValue,Vat,ValidFrom,ValidTo,Deleted,SelectedAuthorID,SelectedCoverID,SelectedThemeID")] BooksViewModel viewmodel)
         {
+            var bookfromdb = _db.Books.Find(viewmodel.ID); // lekérdezem az eredeti objektumot az adatbázisból, ezzen fogja érzékelni az EF a navigációs property változását.
+
+            bookfromdb.ID = viewmodel.ID;
+            bookfromdb.ISBN = viewmodel.ISBN;
+            bookfromdb.Name = viewmodel.Name;
+            bookfromdb.Author = _db.Authors.Find(viewmodel.SelectedAuthorID);
+            bookfromdb.Cover = _db.Covers.Find(viewmodel.SelectedCoverID);
+            bookfromdb.Theme = _db.Themes.Find(viewmodel.SelectedThemeID);
+            bookfromdb.ItemNumber = viewmodel.ItemNumber;
+            bookfromdb.NetValue = viewmodel.NetValue;
+            bookfromdb.Vat = viewmodel.Vat;
+            bookfromdb.GrossValue = 0;
+            bookfromdb.ValidFrom = (DateTime)viewmodel.ValidFrom;
+            bookfromdb.ValidTo = (DateTime)viewmodel.ValidTo;
+            bookfromdb.Deleted = viewmodel.Deleted;
+
             if (ModelState.IsValid)
             {
-                _db.Entry(books).State = EntityState.Modified;
+                //_db.Entry(bookfromdb).State = EntityState.Modified; // nem alkalmas navigation property mentésére, csak skaláris értékek mentésére.
+
+                _db.Configuration.AutoDetectChangesEnabled = true; // ezért használom ezt a megoldást, hogy a befrissítse az EF a változó navigációs property-t
+
                 _db.SaveChanges();
-                return RedirectToAction("Index");
+
+                return Json(new { success = true });
             }
-            return View(books);
+
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Books/Delete/5
@@ -256,32 +343,32 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Books books = _db.Books.Find(id);
-            if (books == null)
+            Books book = _db.Books.Find(id);
+            if (book == null)
             {
                 return HttpNotFound();
             }
-            return View(books);
+            return View(book);
         }
+        #region Helpers
 
-        // POST: Books/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
         {
-            Books books = _db.Books.Find(id);
-            _db.Books.Remove(books);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+            List<string> errorMessages = new List<string>();
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve =>
             {
-                _db.Dispose();
-            }
-            base.Dispose(disposing);
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em =>
+                {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
+
+        #endregion
     }
 }

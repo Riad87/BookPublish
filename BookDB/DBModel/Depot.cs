@@ -5,10 +5,13 @@ namespace bookPublishDB
 {
     public class Depot
     {
-        public int ID { get; set; }
-            
+        public int ID { get; set; }            
+        
         [Required]
-        public Depot_type Type { get; set; }
+        public Depot_type Type { get; set; }        
+        public Partner Partner { get; set; }
+
+        [Required(ErrorMessage ="Raktár nevének kitöltése kötelező!")]
         public string Depot_Name { get; set; }
         public string City { get; set; }
         public string Address { get; set; }

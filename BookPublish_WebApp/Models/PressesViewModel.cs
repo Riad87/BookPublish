@@ -3,11 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using bookPublishDB;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookPublish_WebApp.Models
 {
     public class PressesViewModel
     {
+        [Required(ErrorMessage ="Név megadása kötelező!")]
+        public string PressName { get; set; }
+
+        [Required(ErrorMessage ="Város megadása kötelező!")]
+        public string City { get; set; }
+
+        [Required(ErrorMessage ="Cím megadása kötelező!")]
+        public string Address { get; set; }
+
+        [Required(ErrorMessage ="Irányítószám megadása kötelező!")]
+        public string Zip { get; set; }
+
+        [Required(ErrorMessage ="Ország megadása kötelező!")]
+        public string Country { get; set; }
+
+        [Required(ErrorMessage ="Adószám megadása kötelező!")]
+        public string TaxNumber { get; set; }
+
+        [Required(ErrorMessage ="Számlaszám megadása kötelező!")]
+        public string AccountNumber { get; set; }
+
+        public bool Active { get; set; }
+
         public string ActiveSort { get; internal set; }
 
         public List<Press> Presses { get; set; }

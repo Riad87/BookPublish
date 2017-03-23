@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using PagedList;
 using bookPublishDB;
 using BookPublish_WebApp.Models;
+using BookPublish_WebApp.Logging;
 
 
 namespace BookPublish_WebApp.Controllers
@@ -20,7 +21,7 @@ namespace BookPublish_WebApp.Controllers
         private BookContext _db = new BookContext();
 
         // GET: Authors   
-        [HttpGet]        
+        [HttpGet]
         public ActionResult Index(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
         {
             var model = GetModel(sortorder, currentFilter, searchString, pagesize, page);
@@ -30,13 +31,13 @@ namespace BookPublish_WebApp.Controllers
 
         [HttpPost]
         public ActionResult Index(AuthorsViewModel authorsViewModel)
-        {            
+        {
             foreach (var author in authorsViewModel.Authors)
             {
                 if (author.IsDeleted == true)
                 {
                     Author a = (from x in _db.Authors
-                                where x.AuthorName == author.AuthorName
+                                where x.ID == author.ID
                                 select x).First();
                     a.Delete = true;
                     _db.SaveChanges();
@@ -52,8 +53,8 @@ namespace BookPublish_WebApp.Controllers
 
             return View(model);
         }
-           
-        public AuthorsViewModel GetModel(string sortorder, string currentFilter, string searchString,int? pagesize, int? page)
+
+        public AuthorsViewModel GetModel(string sortorder, string currentFilter, string searchString, int? pagesize, int? page)
         {
             var model = new AuthorsViewModel();
 
@@ -141,7 +142,7 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,AuthorName,Acitve")] Author author)
+        public async Task<ActionResult> Create([Bind(Include = "ID,AuthorName,Active")] Author author)
         {
             if (ModelState.IsValid)
             {
@@ -150,7 +151,7 @@ namespace BookPublish_WebApp.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(author);
+            return RedirectToAction("Index");
         }
 
         // GET: Authors/Edit/5
@@ -165,7 +166,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            return View(author);
+            return PartialView("_partialEdit", author);
         }
 
         // POST: Authors/Edit/5
@@ -179,9 +180,9 @@ namespace BookPublish_WebApp.Controllers
             {
                 _db.Entry(author).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
-            return View(author);
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Authors/Delete/5
@@ -204,10 +205,10 @@ namespace BookPublish_WebApp.Controllers
         [Authorize]
         public ActionResult DeleteConfirmed(PagedList<Author> m)
         {
-            var forDelete =m
+            var forDelete = m
                 .OrderByDescending(x => x.AuthorName)
                 .ToList()
-                .Where(x => x.IsDeleted == true);             
+                .Where(x => x.IsDeleted == true);
 
             _db.Authors.RemoveRange(forDelete);
             _db.SaveChanges();
@@ -222,6 +223,23 @@ namespace BookPublish_WebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
+        {
+            List<string> errorMessages = new List<string>();
+
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve =>
+            {
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em =>
+                {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
     }
 }

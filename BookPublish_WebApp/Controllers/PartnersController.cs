@@ -48,8 +48,8 @@ namespace BookPublish_WebApp.Controllers
                 if (partner.IsDeleted == true)
                 {
                     Partner p = (from x in _db.Partners
-                                where x.Name == partner.Name
-                                select x).First();
+                                 where x.Name == partner.Name
+                                 select x).First();
                     p.Deleted = true;
                     _db.SaveChanges();
                 }
@@ -91,8 +91,8 @@ namespace BookPublish_WebApp.Controllers
             model.CurrentFilter = searchString;
 
             var partners = from p in _db.Partners
-                          where p.Deleted != true
-                          select p;
+                           where p.Deleted != true
+                           select p;
 
             model.AllPartnerCount = partners.Count();
 
@@ -137,17 +137,21 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,Name,Active")] Partner partner)
+        public ActionResult Create([Bind(Include = "ID,Name,Active")] PartnersViewModel viewModel)
         {
+            Partner partner = new Partner();
+            partner.Name = viewModel.Name;
+            partner.Active = viewModel.Active;
+
             if (ModelState.IsValid)
             {
                 _db.Partners.Add(partner);
-                await _db.SaveChangesAsync();
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ID = new SelectList(_db.AccountTypes, "ID", "Details", partner.ID);
-            return View(partner);
+            //ViewBag.ID = new SelectList(_db.AccountTypes, "ID", "Details", viewModel.ID);
+            return View(viewModel);
         }
 
         // GET: Partner/Edit/5
@@ -162,8 +166,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ID = new SelectList(_db.AccountTypes, "ID", "Details", partner.ID);
-            return View(partner);
+            return PartialView("_partialEdit", partner);
         }
 
         // POST: Partner/Edit/5
@@ -177,10 +180,10 @@ namespace BookPublish_WebApp.Controllers
             {
                 _db.Entry(partner).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
-            ViewBag.ID = new SelectList(_db.AccountTypes, "ID", "Details", partner.ID);
-            return View(partner);
+
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Partner/Delete/5
@@ -216,6 +219,23 @@ namespace BookPublish_WebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
+        {
+            List<string> errorMessages = new List<string>();
+
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve =>
+            {
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em =>
+                {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
     }
 }

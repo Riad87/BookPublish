@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using bookPublishDB;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookPublish_WebApp.Models
 {
     public class ThemesViewModel
     {
+        public bool Active { get; set; }
+
+        [Required(ErrorMessage ="Név megadása kötelező!")]
+        public string ThemeName { get; set; }
+
         public string ActiveSort { get; internal set; }
 
         public string NameSort { get; internal set; }

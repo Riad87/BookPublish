@@ -1,0 +1,42 @@
+﻿@model BookPublish_WebApp.Models.AuthorsViewModel
+
+@*@section Scripts
+{
+@Scripts.Render("~/Scripts/jquery.validate.unobtrusive.min.js")
+@Scripts.Render("~/Scripts/jquery.validate.min.js")
+}*@
+
+
+@using (Html.BeginForm("Create", "Authors", FormMethod.Post, new { id = "CreateAuthorform" }))
+{
+    <div class="modal-body" id="form-container">
+
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.AuthorName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-xs-10">
+                    @Html.EditorFor(model => model.AuthorName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.AuthorName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Active, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-xs-10">
+                    @Html.EditorFor(model => model.Active, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Active, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <input class="btn btn-primary" type="submit" value="Mentés">
+        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" id="cancel">Mégsem</button>
+    </div>
+
+}

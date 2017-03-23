@@ -35,7 +35,7 @@ namespace BookPublish_WebApp.Controllers
                                 .Where(x => x.ID == pressure.ID)
                                 .Include(b => b.Book)
                                 .Include(pr => pr.Press).First();
-                                
+
                     p.Deleted = true;
                     _db.SaveChanges();
                 }
@@ -56,7 +56,7 @@ namespace BookPublish_WebApp.Controllers
             var model = new PressuresViewModel();
 
             model.SortOrder = sortorder;
-           
+
             int defaultPageSize = pagesize.HasValue ? pagesize.Value : 10;
 
             model.PageSize = defaultPageSize;
@@ -80,11 +80,17 @@ namespace BookPublish_WebApp.Controllers
             model.CurrentFilter = searchString;
 
             var pressures = _db.Pressure
-                            .Where(x=>x.Deleted != true)
+                            .Where(x => x.Deleted != true)
                             .Include(p => p.Book)
                             .Include(t => t.Press);
 
             model.AllPressureCount = pressures.Count();
+
+            model.AllBooks = new SelectList(_db.Books.Where(b => b.Deleted != true), "ID", "Name", 0);
+
+            model.AllDepots = new SelectList(_db.Depots.Where(d => d.Deleted != true), "ID", "Depot_Name", 0);
+
+            model.AllPresses = new SelectList(_db.Press.Where(p => p.Deleted != true), "ID", "Name", 0);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -165,8 +171,16 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,OrderDate,AfterPressure,Quantity")] Pressure pressure)
+        public async Task<ActionResult> Create([Bind(Include = "ID,OrderDate,AfterPressure,Quantity,SelectedBookID,SelectedPressID,SelecetdDepotID")] PressuresViewModel viewModel)
         {
+            Pressure pressure = new Pressure();
+            pressure.AfterPressure = viewModel.AfterPressure;
+            pressure.Book = _db.Books.Find(viewModel.SelectedBookID);
+            pressure.Depot = _db.Depots.Find(viewModel.SelecetdDepotID);
+            pressure.OrderDate = viewModel.OrderDate;
+            pressure.Press = _db.Press.Find(viewModel.SelectedPressID);
+            pressure.Quantity = viewModel.Quantity;
+
             if (ModelState.IsValid)
             {
                 _db.Pressure.Add(pressure);
@@ -178,18 +192,43 @@ namespace BookPublish_WebApp.Controllers
         }
 
         // GET: Pressure/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Pressure pressure = await _db.Pressure.FindAsync(id);
+
+            var pressure = _db.Pressure
+                .Where(p => p.ID == id)
+                .Include(b => b.Book)
+                .Include(d => d.Depot)
+                .Include(p => p.Press).FirstOrDefault();
+
             if (pressure == null)
             {
                 return HttpNotFound();
             }
-            return View(pressure);
+
+            PressuresViewModel viewModel = new PressuresViewModel();
+
+            int selectedBookID = pressure.Book == null ? 0 : pressure.Book.ID;
+            int selectedPressID = pressure.Press == null ? 0 : pressure.Press.ID;
+            int selectedDepotID = pressure.Depot == null ? 0 : pressure.Depot.ID;
+
+            viewModel.ID = pressure.ID;
+            viewModel.AfterPressure = pressure.AfterPressure;
+            viewModel.AllBooks = new SelectList(_db.Books, "ID", "Name", selectedBookID);
+            viewModel.AllDepots = new SelectList(_db.Depots, "ID", "Depot_Name", selectedDepotID);
+            viewModel.AllPresses = new SelectList(_db.Press, "ID", "Name", selectedPressID);
+            viewModel.Quantity = pressure.Quantity;
+            viewModel.OrderDate = pressure.OrderDate;
+            viewModel.SelecetdDepotID = selectedDepotID;
+            viewModel.SelectedBookID = selectedBookID;
+            viewModel.SelectedPressID = selectedPressID;
+
+
+            return PartialView("_partialEdit", viewModel);
         }
 
         // POST: Pressure/Edit/5
@@ -197,15 +236,29 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,OrderDate,AfterPressure,Quantity")] Pressure pressure)
+        public async Task<ActionResult> Edit([Bind(Include = "ID,OrderDate,AfterPressure,Quantity, SelectedDepotID, SelectedBookID,SelectedPressID")] PressuresViewModel viewModel)
         {
+            var pressurefromdb = _db.Pressure.Find(viewModel.ID);
+
+            pressurefromdb.ID = viewModel.ID;
+            pressurefromdb.AfterPressure = viewModel.AfterPressure;
+            pressurefromdb.Book = _db.Books.Find(viewModel.SelectedBookID);
+            pressurefromdb.Depot = _db.Depots.Find(viewModel.SelecetdDepotID);
+            pressurefromdb.Press = _db.Press.Find(viewModel.SelectedPressID);
+            pressurefromdb.Quantity = viewModel.Quantity;
+            pressurefromdb.OrderDate = viewModel.OrderDate;
+
             if (ModelState.IsValid)
             {
-                _db.Entry(pressure).State = EntityState.Modified;
+                //_db.Entry(pressurefromdb).State = EntityState.Modified;
+
+                _db.Configuration.AutoDetectChangesEnabled = true;
+
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
-            return View(pressure);
+
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Pressure/Delete/5
@@ -241,6 +294,23 @@ namespace BookPublish_WebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
+        {
+            List<string> errorMessages = new List<string>();
+
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve =>
+            {
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em =>
+                {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
     }
 }

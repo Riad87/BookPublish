@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Raktárok</h2>
+<h2>Raktárak</h2>
 
 @using (Html.BeginForm())
 {
@@ -22,6 +22,9 @@
             <th> # </th>
             <th>
                 @Html.ActionLink("Raktár neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th>
+                @Html.ActionLink("Tulajdonos", "Index", new { sortOrder = Model.PartnerSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
             </th>
             <th>
                 @Html.ActionLink("Irányítószám", "Index", new { sortOrder = Model.ZipSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
@@ -60,6 +63,9 @@
                     @Html.DisplayFor(modelItem => Model.Depots[i].Depot_Name)
                 </td>
                 <td align="center">
+                    @Html.DisplayFor(modelItem => Model.Depots[i].Partner.Name)
+                </td>
+                <td align="center">
                     @Html.DisplayFor(modelItem => Model.Depots[i].Zip)
                 </td>
                 <td align="center">
@@ -72,7 +78,7 @@
                     @Html.DisplayFor(modelItem => Model.Depots[i].Type.Type)
                 </td>
                 <td>
-                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Depots[i].ID })</button>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Depots[i].ID }, new { @class = "editbutton" }) </button>
 
                 </td>
             </tr>
@@ -86,15 +92,56 @@
         @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
                 page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
     </div>
+
     <div class="container">
-        <input type="submit" value="Törlés" />
+        <button class="btn btn-success col-sm-2 col-sm-offset-3" data-toggle="modal" data-target="#createnewDepot"><span class="glyphicon glyphicon-plus"></span>Új Raktár</button>
+        <button class="btn btn-danger col-sm-offset-2 col-sm-2" data-toggle="modal" data-target=".deletedialog">Törlés</button>
+
+    </div>
+
+    <div class="modal fade deletedialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Törlés</div>
+                </div>
+                <div class="modal-body">
+                    Biztosan törölni szeretnéd a kijelölt tételeket?
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" value="Törlés">
+                    <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 }
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jqueryval")
+<div class="modal fade" id="createnewDepot" tabindex="-1" role="dialog" aria-labelledby="createnewDepot" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">Új Raktár hozzáadaása</div>
+            </div>
+            @Html.Partial("_partialCreate")
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">Raktár adatainak szerkesztése</div>
+            </div>
+            <div name="modaldata" id="modaldata"></div>
 
-}
+        </div>
+
+    </div>
+</div>

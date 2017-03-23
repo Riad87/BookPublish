@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
 
+    @Styles.Render("~/Content/niftyCorner")
+    <link href="@Styles.Url("~/Content/niftyPrint")" rel="stylesheet" type="text/css" media="print" />
+    @Scripts.Render("~/bundles/nifty")
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/modernizr")
 
 </head>
@@ -15,8 +17,11 @@
         @RenderBody()
     </div>
 
+
     @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/scripts")
     @RenderSection("scripts", required: false)
 </body>
 </html>

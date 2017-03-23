@@ -34,8 +34,8 @@ namespace BookPublish_WebApp.Controllers
                 if (depot_t.IsDeleted == true)
                 {
                     Depot_type d = (from x in _db.Depot_types
-                                where x.Type == depot_t.Type
-                                select x).First();
+                                    where x.Type == depot_t.Type
+                                    select x).First();
                     d.Deleted = true;
                     _db.SaveChanges();
                 }
@@ -56,7 +56,7 @@ namespace BookPublish_WebApp.Controllers
             var model = new DepotTypeViewModel();
 
             model.SortOrder = sortorder;
-                        
+
             int defaultPageSize = pagesize.HasValue ? pagesize.Value : 10;
 
             model.PageSize = defaultPageSize;
@@ -87,13 +87,13 @@ namespace BookPublish_WebApp.Controllers
 
             switch (sortorder)
             {
-                case "name_desc":
+                case "type_desc":
                     depot_t = depot_t.OrderByDescending(s => s.Type);
                     break;
-                case "asc":
+                case "id_asc":
                     depot_t = depot_t.OrderBy(s => s.ID);
                     break;
-                case "act_desc":
+                case "id_desc":
                     depot_t = depot_t.OrderByDescending(s => s.ID);
                     break;
                 default:
@@ -160,7 +160,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            return View(depot_type);
+            return PartialView("_partialEdit", depot_type);
         }
 
         // POST: Depot_type/Edit/5
@@ -174,9 +174,9 @@ namespace BookPublish_WebApp.Controllers
             {
                 _db.Entry(depot_type).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
-            return View(depot_type);
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Depot_type/Delete/5
@@ -212,6 +212,21 @@ namespace BookPublish_WebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
+        {
+            List<string> errorMessages = new List<string>();
+
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve => {
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em => {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
     }
 }

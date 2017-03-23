@@ -15,9 +15,11 @@ namespace bookPublishDB
         }
 
         public int ID { get; set; }
+
+        [Required(ErrorMessage = "Név megadása kötelező")]
         public string Name { get; set; }
         public List<Depot> Depot { get; set; }
-        public int Active { get; set; }
+        public bool Active { get; set; }
         public bool Deleted { get; set; }
 
         [NotMapped]

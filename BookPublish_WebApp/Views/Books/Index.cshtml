@@ -6,7 +6,7 @@
 
 }
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Index","Books",FormMethod.Post))
 {
     @Html.HiddenFor(m => m.NameSort)
     @Html.HiddenFor(m => m.CurrentFilter)
@@ -22,31 +22,37 @@
                 #
             </th>
             <th align="center">
-                @Html.ActionLink("Azonosító", "Index", new { sortOrder = Model.ItemNum, currentfilter = Model.CurrentFilter })
+                @Html.ActionLink("Azonosító", "Index", new { sortOrder = Model.ItemNumSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="center">
-                @Html.ActionLink("ISBN", "Index", new { sortOrder = Model.ISBN, currentfilter = Model.CurrentFilter })
+                @Html.ActionLink("ISBN", "Index", new { sortOrder = Model.ISBNSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="center">
-                @Html.ActionLink("Szerző", "Index", new { sortOrder = Model.ISBN, currentfilter = Model.CurrentFilter })
+                @Html.ActionLink("Szerző", "Index", new { sortOrder = Model.AuthorNameSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="center">
                 @Html.ActionLink("Könyv neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="center">
-                @Html.ActionLink("Nettó ár", "Index", new { sortOrder = Model.NetValue, currentfilter = Model.CurrentFilter })
+                @Html.ActionLink("Borító típusa", "Index", new { sortOrder = Model.CoverTypeSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="center">
-                @Html.ActionLink("Áfa", "Index", new { sortOrder = Model.Vat, currentfilter = Model.CurrentFilter })
+                @Html.ActionLink("Könyv témája", "Index", new { sortOrder = Model.ThemeTypeSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="center">
-                @Html.ActionLink("Bruttó ár", "Index", new { sortOrder = Model.GrossValue, currentfilter = Model.CurrentFilter })
+                @Html.ActionLink("Nettó ár", "Index", new { sortOrder = Model.NetValueSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="center">
-                @Html.ActionLink("Érvényes -tól", "Index", new { sortOrder = Model.ValidFrom, currentfilter = Model.CurrentFilter })
+                @Html.ActionLink("Áfa", "Index", new { sortOrder = Model.VatSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="center">
-                @Html.ActionLink("Érvényes -ig", "Index", new { sortOrder = Model.ValidTo, currentfilter = Model.CurrentFilter })
+                @Html.ActionLink("Bruttó ár", "Index", new { sortOrder = Model.GrossValueSort, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Érvényes -tól", "Index", new { sortOrder = Model.ValidFromSort, currentfilter = Model.CurrentFilter })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Érvényes -ig", "Index", new { sortOrder = Model.ValidToSort, currentfilter = Model.CurrentFilter })
             </th>
             <th align="right">
                 Találatok:
@@ -85,6 +91,12 @@
                     @Html.DisplayFor(model => model.Books[i].Name)
                 </td>
                 <td>
+                    @Html.DisplayFor(model => model.Books[i].Cover.CoverName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Books[i].Theme.ThemeName)
+                </td>
+                <td>
                     @Html.DisplayFor(model => model.Books[i].NetValue) Ft
                 </td>
                 <td>
@@ -100,7 +112,7 @@
                     @Html.DisplayFor(model => model.Books[i].ValidTo)
                 </td>
                 <td>
-                    <button  data-toggle = "modal", data-target = "#myModal">@Html.ActionLink("Edit", "Edit", new { id = Model.Books[i].ID }) </button>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Books[i].ID }, new {@class= "editbutton" }) </button>
 
                 </td>
             </tr>
@@ -116,97 +128,56 @@
         </div>
 
         <div class="container">
-            <input type="submit" value="Törlés" />
-            @*<button class="btn btn-default col-xs-offset-2 col-xs-2">@Html.ActionLink("Create New", "Create")</button>
-                <button class="btn btn-danger col-xs-offset-4 col-xs-2">@Html.ActionLink("Delete", "Delete")</button>*@
+            <button class="btn btn-success col-sm-2 col-sm-offset-3" data-toggle="modal" data-target="#createnewBook"><span class="glyphicon glyphicon-plus"></span>Új könyv</button>
+            <button class="btn btn-danger col-sm-offset-2 col-sm-2" data-toggle="modal" data-target=".deletedialog">Törlés</button>
 
         </div>
 
-        <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal fade deletedialog">
             <div class="modal-dialog">
-
-                <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Modal Header</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <div class="modal-title">Törlés</div>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.ISBN, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.ISBN, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.ISBN, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.Books[i, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.ItemNumber, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.ItemNumber, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.ItemNumber, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.NetValue, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.NetValue, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.NetValue, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Vat, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.Vat, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.Vat, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.GrossValue, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.GrossValue, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.GrossValue, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.ValidFrom, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.ValidFrom, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.ValidFrom, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.ValidTo, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.ValidTo, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.ValidTo, "", new { @class = "text-danger" })
-                            </div>
-                        </div>                        
+                        Biztosan törölni szeretnéd a kijelölt tételeket?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input class="btn btn-primary" type="submit" value="Törlés">
+                        <button class="btn btn-default" data-dismiss="modal">Mégsem</button>                        
                     </div>
                 </div>
-
             </div>
+
+        </div>
+}
+
+<div class="modal fade" id="createnewBook" tabindex="-1" role="dialog" aria-labelledby="createnewBook" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">Új könyv hozzáadaása</div>
+            </div>            
+                @Html.Partial("_partialCreate")
+            
+            
         </div>
 
-       
-}
-@section scripts{
-    @Scripts.Render("~/bundles/jquery")
+    </div>
+</div>
 
-}
+<div class="modal fade" id="editor" name="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">Könyv szerkesztése</div>
+            </div>
+            <div name="modaldata" id="modaldata"></div>
+
+        </div>
+
+    </div>
+</div>

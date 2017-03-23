@@ -84,6 +84,8 @@ namespace BookPublish_WebApp.Controllers
 
             model.AllStMarginCount = stockistMargin.Count();
 
+            model.AllPartner = new SelectList(_db.Partners.Where(p => p.Deleted != true && p.Active != false), "ID", "Name", 0);
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 stockistMargin = stockistMargin.Where(s => s.Partner.Name.Contains(searchString));
@@ -145,8 +147,13 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,Discount")] Stockist_margin stockist_margin)
+        public async Task<ActionResult> Create([Bind(Include = "Discount,Active,SelectedPartnerID")] StockistMarginViewModel viewModel)
         {
+            Stockist_margin stockist_margin = new Stockist_margin();
+            stockist_margin.Active = viewModel.Active;
+            stockist_margin.Discount = Convert.ToDouble(viewModel.Discount);
+            stockist_margin.Partner = _db.Partners.Find(viewModel.SelectedPartnerID);
+
             if (ModelState.IsValid)
             {
                 _db.Stockist_margins.Add(stockist_margin);
@@ -158,18 +165,30 @@ namespace BookPublish_WebApp.Controllers
         }
 
         // GET: Stockist_margin/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Stockist_margin stockist_margin = await _db.Stockist_margins.FindAsync(id);
+            Stockist_margin stockist_margin = _db.Stockist_margins
+                                                .Where(s=>s.ID == id)
+                                                .Include(p=>p.Partner).FirstOrDefault();
+
+            int SelectedParterID = stockist_margin.Partner == null ? 0 : stockist_margin.Partner.ID;
+
+            StockistMarginViewModel viewModel = new StockistMarginViewModel();
+            viewModel.Active = stockist_margin.Active;
+            viewModel.Discount = stockist_margin.Discount;
+            viewModel.SelectedPartnerID = SelectedParterID;
+            viewModel.AllPartner = new SelectList(_db.Partners, "ID", "Name", SelectedParterID);
+
             if (stockist_margin == null)
             {
                 return HttpNotFound();
             }
-            return View(stockist_margin);
+
+            return PartialView("_partialEdit", viewModel);
         }
 
         // POST: Stockist_margin/Edit/5
@@ -177,15 +196,25 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,Discount")] Stockist_margin stockist_margin)
+        public async Task<ActionResult> Edit([Bind(Include = "ID,Discount,Active,SelectedPartnerID")] StockistMarginViewModel viewModel)
         {
+            var stockistfromdb = _db.Stockist_margins.Find(viewModel.ID);
+
+            stockistfromdb.Active = viewModel.Active;
+            stockistfromdb.Discount = viewModel.Discount;
+            stockistfromdb.Partner = _db.Partners.Find(viewModel.SelectedPartnerID);
+
             if (ModelState.IsValid)
             {
-                _db.Entry(stockist_margin).State = EntityState.Modified;
+                //_db.Entry(stockistfromdb).State = EntityState.Modified;
+
+                _db.Configuration.AutoDetectChangesEnabled = true;
+
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
-            return View(stockist_margin);
+
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Stockist_margin/Delete/5
@@ -221,6 +250,24 @@ namespace BookPublish_WebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        // A megkapott model state-ből kiveszi a a hibákat és egy listába beteszi és azt adja vissza.
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
+        {
+            List<string> errorMessages = new List<string>();
+
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve =>
+            {
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em =>
+                {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
     }
 }

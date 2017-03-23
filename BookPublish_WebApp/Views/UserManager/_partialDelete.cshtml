@@ -1,0 +1,11 @@
+﻿@model BookPublish_WebApp.Models.UserViewModel
+
+@using (Html.BeginForm("DeleteUser", "UserManager", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
+        <button class="btn btn-primary" type="submit" value="Mentés">Mentés</button>
+    </div>
+}

@@ -80,7 +80,7 @@
                     @Html.DisplayFor(modelItem => Model.Presses[i].Active)
                 </td>
                 <td>
-                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Presses[i].ID })</button>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Presses[i].ID }, new { @class = "editbutton" })</button>
 
                 </td>
             </tr>
@@ -95,7 +95,56 @@
                 page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
     </div>
     <div class="container">
-        <input type="submit" value="Törlés" />
+        <button class="btn btn-success col-sm-2 col-sm-offset-3" data-toggle="modal" data-target="#createnewPress"><span class="glyphicon glyphicon-plus"></span>Új nyomda</button>
+        <button class="btn btn-danger col-sm-offset-2 col-sm-2" data-toggle="modal" data-target=".deletedialog">Törlés</button>
+
+    </div>
+
+    <div class="modal fade deletedialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Törlés</div>
+                </div>
+                <div class="modal-body">
+                    Biztosan törölni szeretnéd a kijelölt tételeket?
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" value="Törlés">
+                    <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 }
+
+<div class="modal fade" id="createnewPress" tabindex="-1" role="dialog" aria-labelledby="createnewPress" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">Új nyomda hozzáadaása</div>
+            </div>
+            @Html.Partial("_partialCreate")
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">Nyomda adatainak szerkesztése</div>
+            </div>
+            <div name="modaldata" id="modaldata"></div>
+
+        </div>
+
+    </div>
+</div>
+

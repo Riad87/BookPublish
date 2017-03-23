@@ -136,8 +136,12 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,ThemeName,Active")] Theme theme)
+        public async Task<ActionResult> Create([Bind(Include = "ID,ThemeName,Active")] ThemesViewModel viewModel)
         {
+            Theme theme = new Theme();
+            theme.Active = viewModel.Active;
+            theme.ThemeName = viewModel.ThemeName;
+
             if (ModelState.IsValid)
             {
                 _db.Themes.Add(theme);
@@ -145,7 +149,7 @@ namespace BookPublish_WebApp.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(theme);
+            return View(viewModel);
         }
 
         // GET: Themes/Edit/5
@@ -160,7 +164,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            return View(theme);
+            return PartialView("_partialEdit", theme);
         }
 
         // POST: Themes/Edit/5
@@ -174,11 +178,11 @@ namespace BookPublish_WebApp.Controllers
             {
                 _db.Entry(theme).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
-            return View(theme);
-        }
 
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
+        }
         // GET: Themes/Delete/5
         public async Task<ActionResult> Delete(int? id)
         {
@@ -212,6 +216,23 @@ namespace BookPublish_WebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
+        {
+            List<string> errorMessages = new List<string>();
+
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve =>
+            {
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em =>
+                {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
     }
 }

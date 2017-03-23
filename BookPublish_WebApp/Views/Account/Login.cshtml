@@ -6,7 +6,6 @@
 
 <div class="top-content">
 
-
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3 form-box">
             <div class="form-top">
@@ -18,7 +17,7 @@
                     <i class="fa fa-key"></i>
                 </div>
             </div>
-            <div class="form-bottom">
+            <div class="form-bottom" id="login">
                 
                 <section id="loginForm">
                     @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
@@ -27,8 +26,8 @@
 
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                         <div class="form-group">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-username form-control", placeholder = "Felhasználónév" })
-                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-username form-control", placeholder = "Felhasználónév" })
+                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
                         </div>
                         <div class="form-group">
                             @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Jelszó" })
@@ -37,25 +36,9 @@
                         <div class="form-group">
                             <button class="btn btn-login" type="submit">Bejelentkezés</button>
                         </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-2 col-md-10">
-                                <div class="checkbox">
-                                    @Html.CheckBoxFor(m => m.RememberMe)
-                                    @Html.LabelFor(m => m.RememberMe)
-                                </div>
-                            </div>
-                        </div>
-
-                           
-
-
-                                <p>
-                                    @Html.ActionLink("Új felhasználó regisztációja", "Register")
-                                </p>
-                                @* Enable this once you have account confirmation enabled for password reset functionality
-                                    <p>
-                                        @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                                    </p>*@
+                                        
+                                                                        
+                               
                     }
                 </section>
             </div>

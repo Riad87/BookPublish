@@ -1,0 +1,48 @@
+﻿@model BookPublish_WebApp.Models.StockistMarginViewModel
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <ul id="errormessage" name="errormessage"></ul>
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.ID)
+
+            <div class="form-group">
+                @Html.Label("Partner neve", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <div class="checkbox">
+                        @Html.DropDownListFor(model => model.SelectedPartnerID, Model.AllPartner, "Válassz partnert", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.SelectedPartnerID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Kedvezmény", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Discount, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Discount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Aktív-e", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.Active)
+                        @Html.ValidationMessageFor(model => model.Active, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary">@Html.ActionLink("Mentés", "Edit", "Stockist_margin", new { id = String.Empty }, new { id = "btn-edit-submit" })</button>
+        <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
+    </div>
+}
+
+

@@ -36,7 +36,7 @@ namespace BookPublish_WebApp.Controllers
                 {
                     try
                     {
-                        Press p = _db.Presses
+                        Press p = _db.Press
                                    .Where(x => x.ID == press.ID)
                                   .Include(pr => pr.Pressure).First();
                         p.Deleted = true;
@@ -96,8 +96,8 @@ namespace BookPublish_WebApp.Controllers
 
             model.CurrentFilter = searchString;
 
-            var presses = from p in _db.Presses
-                          where p.Deleted != true                          
+            var presses = from p in _db.Press
+                          where p.Deleted != true
                           select p;
 
             model.AllPressCount = presses.Count();
@@ -161,7 +161,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Press press = await _db.Presses.FindAsync(id);
+            Press press = await _db.Press.FindAsync(id);
             if (press == null)
             {
                 return HttpNotFound();
@@ -180,16 +180,27 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,Name,City,Address,Zip,Country,Active")] Press press)
+        public ActionResult Create([Bind(Include = "PressName,City,Address,Zip,Country,TaxNumber,AccountNumber")] PressesViewModel viewModel)
         {
+            Press press = new Press();
+
+            press.AccountNumber = viewModel.AccountNumber;
+            press.Address = viewModel.Address;
+            press.City = viewModel.City;
+            press.Country = viewModel.Country;
+            press.Name = viewModel.PressName;
+            press.Zip = viewModel.Zip;
+            press.TaxNumber = viewModel.TaxNumber;
+
             if (ModelState.IsValid)
             {
-                _db.Presses.Add(press);
-                await _db.SaveChangesAsync();
+                _db.Press.Add(press);
+
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(press);
+            return View(viewModel);
         }
 
         // GET: Press/Edit/5
@@ -199,12 +210,12 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Press press = await _db.Presses.FindAsync(id);
+            Press press = await _db.Press.FindAsync(id);
             if (press == null)
             {
                 return HttpNotFound();
             }
-            return View(press);
+            return PartialView("_partialEdit", press);
         }
 
         // POST: Press/Edit/5
@@ -212,15 +223,15 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,Name,City,Address,Zip,Country,Active")] Press press)
+        public async Task<ActionResult> Edit([Bind(Include = "ID,Name,City,Address,Zip,Country,TaxNumber,AccountNumber,Active")] Press press)
         {
             if (ModelState.IsValid)
             {
                 _db.Entry(press).State = EntityState.Modified;
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
-            return View(press);
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Press/Delete/5
@@ -230,7 +241,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Press press = await _db.Presses.FindAsync(id);
+            Press press = await _db.Press.FindAsync(id);
             if (press == null)
             {
                 return HttpNotFound();
@@ -243,8 +254,8 @@ namespace BookPublish_WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Press press = await _db.Presses.FindAsync(id);
-            _db.Presses.Remove(press);
+            Press press = await _db.Press.FindAsync(id);
+            _db.Press.Remove(press);
             await _db.SaveChangesAsync();
             return RedirectToAction("Index");
         }
@@ -256,6 +267,23 @@ namespace BookPublish_WebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
+        {
+            List<string> errorMessages = new List<string>();
+
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve =>
+            {
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em =>
+                {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
     }
 }

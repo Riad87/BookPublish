@@ -2,6 +2,7 @@
 using PagedList;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -14,6 +15,11 @@ namespace BookPublish_WebApp.Models
         public List<Author> Authors { get; set; }
 
         public int AllAuthorCount { get; set; }
+
+        [Required(ErrorMessage ="A név megadása kötelező!")]
+        public string AuthorName { get; set; }
+
+        public bool Active { get; set; }
 
         public List<object> PagerList
         {

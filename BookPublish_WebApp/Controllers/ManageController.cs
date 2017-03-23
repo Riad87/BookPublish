@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -7,6 +6,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BookPublish_WebApp.Models;
+using System.Configuration;
 
 namespace BookPublish_WebApp.Controllers
 {
@@ -15,6 +15,7 @@ namespace BookPublish_WebApp.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext _db = new ApplicationDbContext();
 
         public ManageController()
         {
@@ -215,7 +216,10 @@ namespace BookPublish_WebApp.Controllers
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
-            return View();
+            ChangePasswordViewModel viewmodel = new ChangePasswordViewModel();
+            viewmodel.AllUsers = new SelectList(_db.Users,"ID","UserName");
+
+            return View(viewmodel);
         }
 
         //
@@ -228,17 +232,43 @@ namespace BookPublish_WebApp.Controllers
             {
                 return View(model);
             }
-            var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
-            if (result.Succeeded)
+            if (ConfigurationManager.AppSettings["Admin"].Equals(HttpContext.User.Identity.Name))
             {
-                var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+                ApplicationUser user = await UserManager.FindByIdAsync(model.SelectedUserID);
+
                 if (user != null)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    user.PasswordHash = UserManager.PasswordHasher.HashPassword(model.NewPassword);
+                    var result = await UserManager.UpdateAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        AddErrors(result);
+                        return View(model);
+                    }
                 }
-                return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
+                else
+                return HttpNotFound();                       
+                               
             }
-            AddErrors(result);
+            else
+            {
+                var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+                    if (user != null)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    }
+                    return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
+                }
+                else
+                {
+                    AddErrors(result);
+                    return View(model);
+                }
+            }
+                        
             return View(model);
         }
 

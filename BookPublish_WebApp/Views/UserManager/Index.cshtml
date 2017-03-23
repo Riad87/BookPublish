@@ -1,0 +1,135 @@
+﻿@model BookPublish_WebApp.Models.UserViewModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Felhasználó management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="nifty">
+    <h2>@ViewBag.Title</h2>
+
+    @using (Html.BeginForm("Index","UserManager", FormMethod.Get))
+    {
+        @Html.HiddenFor(m => m.NameSort)
+        @Html.HiddenFor(m => m.CurrentFilter)
+        @Html.HiddenFor(m => m.SortOrder)
+
+        <div>
+            @Html.TextBox("searchString", "Keresés", new { @class = "searchstring" }) <button class="col-xs-offset-6 col-xs-2 btn btn-table" type="submit">Keresés</button>
+        </div>
+
+        <table class="table table-hover table-responsive table-condensed" border="0">
+            <tr>
+                <th align="center">
+                    @Html.ActionLink("Felhasználó név", "Index", "UserManager", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter }, null)
+                </th>
+                <th align="center">
+                    @Html.ActionLink("E-mail cím", "Index", "UserManager", new { sortOrder = Model.EmailSort, currentfilter = Model.CurrentFilter }, null)
+                </th>                
+                <th align="right">
+                    Találatok:
+                    @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                    db/oldal
+                </th>
+            </tr>
+
+            @foreach (var item in Model.Users)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelitem => item.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td></td>
+                    <td>
+                        <button class="btn btn-table"> @Html.ActionLink("Szerkesztés", "Edit", new { id = item.Id }, new { @class = "editbutton" }) </button>
+                        @*@using (Ajax.BeginForm("DeleteUser", "UserManager", new { id = item.Id }, new AjaxOptions { HttpMethod = "POST" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-table" type="submit">Törlés</button>
+                        }*@
+                        <button class="btn btn-table">@Html.ActionLink("Jelszó reset", "ChangePassword", new { id = item.Id }, new { @class = "passwordbutton" })</button>
+                        
+                        
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+        <div class="container">
+            Page @Model.PageNumber of @Model.PageCount
+
+            @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                 page => Url.Action("Index", "UserManager", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+        </div>
+
+        <div class="container">
+            <button class="btn btn-table col-sm-2 col-sm-offset-3"><span class="glyphicon glyphicon-plus"></span>@Html.ActionLink("Új felhasználó", "CreateUser", String.Empty, new { @class = "createbutton" })</button>
+            
+        </div>     
+
+
+    }
+
+    <div class="modal fade" id="createnewUser" tabindex="-1" role="dialog" aria-labelledby="createnewUser" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Új felhasználó hozzáadaása</div>
+                </div>
+                <div name="modalCreatedata" id="modalCreatedata"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="pwdeditor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Jelszó reset</div>
+                </div>
+                <div name="modalpwddata" id="modalpwddata"></div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Felhasználó szerkesztése</div>
+                </div>
+                <div name="modaldata" id="modaldata"></div>
+
+            </div>
+
+        </div>
+    </div>
+      
+    
+    <div class="modal fade deletedialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Törlés</div>
+                </div>
+                <div class="modal-body">
+                    Biztosan törölni szeretnéd a kijelölt tételt?
+                </div>
+                @Html.Partial("_partialDelete")
+            </div>
+        </div>
+
+    </div>
+
+</div>

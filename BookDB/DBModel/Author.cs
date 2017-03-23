@@ -11,7 +11,7 @@ namespace bookPublishDB
             Book = new List<Books>();
         }
         public int ID { get; set; }
-        [Required]
+        [Required(ErrorMessage = "A név megadása kötelező!")]
         public string AuthorName { get; set; }
         public bool Active { get; set; }
         public bool Delete { get; set; }

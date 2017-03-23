@@ -1,8 +1,7 @@
 ﻿@model BookPublish_WebApp.Models.DepotTypeViewModel
 @using PagedList.Mvc;
 @{
-    ViewBag.Title = "Raktár típusok";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Raktár típusok";    
 }
 
 <h2>Raktár típusok</h2>
@@ -27,7 +26,7 @@
                 @Html.ActionLink("ID", "Index", new { sortOrder = Model.IDSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
             </th>
             <th align="center">
-                @Html.ActionLink("Raktár név", "Index", new { sortOrder = Model.TypeSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+                @Html.ActionLink("Raktár típusa", "Index", new { sortOrder = Model.TypeSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
             </th>
             <th align="center">
                 Találatok:
@@ -51,7 +50,7 @@
                     @Html.DisplayFor(modelItem => Model.Depot_type[i].Type)
                 </td>
                 <td>
-                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Depot_type[i].ID }) </button>
+                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Depot_type[i].ID }, new { @class = "editbutton" }) </button>
                 </td>
             </tr>
         }
@@ -65,13 +64,58 @@
                 page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
     </div>
 
-    <div class="container">
 
-        @*<button class="btn btn-default col-xs-offset-2 col-xs-2">@Html.ActionLink("Create New", "Create")</button>*@
-        <input class="btn btn-default col-xs-offset-2 col-xs-2" type="submit" value="Törlés" />
+    <div class="container">
+        <button class="btn btn-success col-sm-2 col-sm-offset-3" data-toggle="modal" data-target="#createnewDepotType"><span class="glyphicon glyphicon-plus"></span>Új raktár típus</button>
+        <button class="btn btn-danger col-sm-offset-2 col-sm-2" data-toggle="modal" data-target=".deletedialog">Törlés</button>
 
     </div>
+
+        <div class="modal fade deletedialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <div class="modal-title">Törlés</div>
+                    </div>
+                    <div class="modal-body">
+                        Biztosan törölni szeretnéd a kijelölt tételeket?
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
+                        <input class="btn btn-primary" type="submit" value="Mentés">
+                    </div>
+                </div>
+            </div>
+
+        </div>
 }
-@section scripts{
-    @Scripts.Render("~/bundles/jquery")
-}
+
+<div class="modal fade" id="createnewDepotType" tabindex="-1" role="dialog" aria-labelledby="createnewDepotType" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">Új raktár típus felvétele</div>
+            </div>
+            @Html.Partial("_partialCreate")          
+            
+        </div>
+        
+    </div>
+</div>
+
+<div class="modal fade" id="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="modal-title">Raktár típus szerkesztése</div>
+            </div>
+            <div name="modaldata" id="modaldata"></div>
+
+        </div>
+
+    </div>
+</div>
+

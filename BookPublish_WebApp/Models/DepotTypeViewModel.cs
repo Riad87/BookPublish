@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using bookPublishDB;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookPublish_WebApp.Models
 {
     public class DepotTypeViewModel
     {
         public string TypeSort { get; internal set; }
+
+        [Required(ErrorMessage ="Raktár típus megadása kötelező!")]
+        public string Type { get; set; }
+
+        public bool Active { get; set; }
 
         public string IDSort { get; set; }
 

@@ -1,0 +1,27 @@
+﻿@model BookPublish_WebApp.Models.RoleViewModel
+
+@using (Html.BeginForm("CreateRole", "RoleManager", FormMethod.Post))
+{
+    <div class="modal-body" id="form-container">
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <ul id="errormessageCreateRole" name="errormessageCreateRole"></ul>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.RoleName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.RoleName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.RoleName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-primary">@Html.ActionLink("Mentés", "CreateRole", "RoleManager", new { id = String.Empty }, new { id = "btn-createrole-submit" })</button> @*Az id String.Empty szándékosan szerepel ott, hogy ne egészítse ki a url-t Length-vel*@
+        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true" id="cancel">Mégsem</button>
+    </div>
+}
+

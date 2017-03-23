@@ -1,14 +1,142 @@
-﻿@using BookPublish_WebApp.Models
-@model LoginViewModel
+﻿@model  BookPublish_WebApp.Models.BooksViewModel
+@using PagedList.Mvc;
+
 @{
     ViewBag.Title = "Könyvek és rendelések";
 }
+<div id="nifty">
+    <h2>@ViewBag.Title.</h2>
 
-<h2>@ViewBag.Title.</h2>
+    @using (Html.BeginForm("Index", "Home"))
+    {
+        @Html.HiddenFor(m => m.NameSort)
+        @Html.HiddenFor(m => m.CurrentFilter)
+        @Html.HiddenFor(m => m.SortOrder)
+
+        <div>
+        @Html.TextBox("searchString","Keresés",new {@class="searchstring" }) <button class="col-xs-offset-6 col-xs-2 btn btn-table" type="submit">Keresés</button>
+        </div>
+
+        
+        <table class="table table-hover table-responsive table-condensed" border="0">
+            
+            <tr>
+                <th>
+                    #
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Azonosító", "Index", "Home", new { sortOrder = Model.ItemNumSort, currentfilter = Model.CurrentFilter }, null)
+                </th>
+                <th align="center">
+                    @Html.ActionLink("ISBN", "Index", "Home", null, new { sortOrder = Model.ISBNSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Szerző", "Index", "Home", null, new { sortOrder = Model.AuthorNameSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Könyv neve", "Index", "Home", null, new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Borító típusa", "Index", "Home", null, new { sortOrder = Model.CoverTypeSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Könyv témája", "Index", "Home", null, new { sortOrder = Model.ThemeTypeSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Nettó ár", "Index", "Home", null, new { sortOrder = Model.NetValueSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Áfa", "Index", "Home", null, new { sortOrder = Model.VatSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Bruttó ár", "Index", "Home", null, new { sortOrder = Model.GrossValueSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Érvényes -tól", "Index", "Home", null, new { sortOrder = Model.ValidFromSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Érvényes -ig", "Index", "Home", null, new { sortOrder = Model.ValidToSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="right">
+                    Találatok:
+                    @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                    db/oldal
+
+                </th>
+            </tr>
+
+            @for (int i = 0; i < Model.Books.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.HiddenFor(model => model.Books[i].ID)
+                        @Html.HiddenFor(model => model.Books[i].ISBN)
+                        @Html.HiddenFor(model => model.Books[i].Author)
+                        @Html.HiddenFor(model => model.Books[i].Name)
+                        @Html.HiddenFor(model => model.Books[i].NetValue)
+                        @Html.HiddenFor(model => model.Books[i].Vat)
+                        @Html.HiddenFor(model => model.Books[i].GrossValue)
+                        @Html.HiddenFor(model => model.Books[i].ValidFrom)
+                        @Html.HiddenFor(model => model.Books[i].ValidTo)
+
+                        @Html.EditorFor(model => model.Books[i].IsDeleted)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].ItemNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].ISBN)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Author.AuthorName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Cover.CoverName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Theme.ThemeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].NetValue) Ft
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Vat)%
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].GrossValue) Ft
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].ValidFrom)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].ValidTo)
+                    </td>
+                    <td>
+                        @*<button >@Html.ActionLink("Edit", "Edit", "Home", new { id = Model.Books[i].ID }) </button>*@
+                        <button class="btn btn-table">@Html.ActionLink("Megrendelések", "OrderDetail", new { id = Model.Books[i].ID }, new { @class = "orderdetail" }) </button>
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+        <div class="container">
+            Page @Model.PageNumber of @Model.PageCount
+
+            @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                 page => Url.Action("Index", "Home", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+        </div>
 
 
-     
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+    }
+</div>
+
+<div name="orderDetail" id="orderDetail"></div>
+
+
+
+

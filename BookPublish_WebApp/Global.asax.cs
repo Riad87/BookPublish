@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using BookPublish_WebApp.ModelBinder;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -18,6 +15,7 @@ namespace BookPublish_WebApp
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AntiForgeryConfig.SuppressIdentityHeuristicChecks = true;
+            ModelBinders.Binders.Add(typeof(double), new DoubleModelBinder());
         }
     }
 }

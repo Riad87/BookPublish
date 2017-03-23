@@ -8,7 +8,7 @@ namespace bookPublishDB
     {
         public int ID { get; set; }
         public string CoverName { get; set; }
-        public int Active { get; set; }
+        public bool Active { get; set; }
         public bool Deleted { get; set; }
 
         [NotMapped]

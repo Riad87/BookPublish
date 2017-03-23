@@ -1,0 +1,51 @@
+﻿@model BookPublish_WebApp.Models.PressureMasterDetailsModel
+
+<div id="nifty">   
+
+    <table class="table table-striped table-responsive table-condensed" border="0">
+        <tr>
+            <th align="center">
+                Megrendelés Dátuma
+            </th>
+            <th align="center">
+                Utánnyomás
+            </th>
+            <th align="center">
+                Mennyiség
+            </th>
+            <th align="center">
+                Nem eladott
+            </th>
+            <th align="center"></th>
+        </tr>
+        @for (int i = 0; i < Model.PressureOrders.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(model => model.PressureOrders[i].OrderDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.PressureOrders[i].AfterPressure)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.PressureOrders[i].Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.PressureOrders[i].NotSold)
+                </td>
+                <td>
+                    <button class="btn btn-table">@Html.ActionLink("PDF generálás", "PDFGenerate", new { id = Model.PressureOrders[i].ID }, new { @class = "pdf" })</button>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+@section Scripts{
+    window.onload = function () {
+    if (!NiftyCheck())
+        return;    
+    Rounded("div#nifty", "all", "#4A44A4", "#1C5D99", "smooth");
+    
+}
+
+}

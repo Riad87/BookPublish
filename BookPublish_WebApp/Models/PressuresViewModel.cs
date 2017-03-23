@@ -2,11 +2,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using bookPublishDB;
+using System.Web.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookPublish_WebApp.Models
 {
     public class PressuresViewModel
     {
+        public SelectList AllBooks { get; set; }
+
+        public int ID { get; set; }
+
+        [Required(ErrorMessage = "Könyv kiválasztása kötelező!")]
+        public int SelectedBookID { get; set; }
+       
+        public SelectList AllPresses { get; set; }
+
+        [Required(ErrorMessage = "Nyomda kiválasztása kötelező!")]
+        public int SelectedPressID { get; set; }
+        
+        public SelectList AllDepots { get; set; }
+
+        [Required(ErrorMessage = "Raktár megadása kötelező!")]
+        public int SelecetdDepotID { get; set; }
+
+        public int AfterPressure { get; set; }
+
+        [DataType(DataType.Date)]
+        [Required(ErrorMessage ="Rendelés dátumának megadása kötelező!")]
+        public DateTime OrderDate { get; set; }
+
+        [Required(ErrorMessage ="Mennyiség megadása kötelező!")]
+        public int Quantity { get; set; }
+
         public string OrderSort { get; internal set; }
 
         public string AfterPressureSort { get; internal set; }

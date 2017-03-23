@@ -147,16 +147,20 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,CoverName,Active")] Cover cover)
+        public ActionResult Create([Bind(Include = "ID,CoverName,Active")] CoversViewModel viewModel)
         {
+            Cover cover = new Cover();
+            cover.Active = viewModel.Active;
+            cover.CoverName = viewModel.CoverName;
+           
             if (ModelState.IsValid)
             {
                 _db.Covers.Add(cover);
-                await _db.SaveChangesAsync();
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(cover);
+            return View(viewModel);
         }
 
         // GET: Cover/Edit/5
@@ -171,7 +175,7 @@ namespace BookPublish_WebApp.Controllers
             {
                 return HttpNotFound();
             }
-            return View(cover);
+            return PartialView("_partialEdit", cover);
         }
 
         // POST: Cover/Edit/5

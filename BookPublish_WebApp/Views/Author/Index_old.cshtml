@@ -1,0 +1,164 @@
+﻿@model PagedList.IPagedList<bookPublishDB.Author>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Szerzők";
+    var count = Model.Count;
+    ViewBag.listSize = 10;
+
+}
+
+<h2>Index</h2>
+
+@using (Html.BeginForm("Index", "Authors", FormMethod.Get))
+{
+    <p>@Html.TextBox("searchString", ViewBag.CurrentFilter as string, new { @class = "col-offset-xs-2 col-xs-2" }) <input class="col-xs-offset-3 col-xs-2" type="submit" value="Keresés" /></p>
+
+}
+@*@using (Html.BeginForm("DeleteConfirmed", "Authors", FormMethod.Post))
+    {*@
+<table class="table table-striped table-hover table-responsive table-condensed" border="0">
+    <tr>
+        <th> # </th>
+        <th>
+            @Html.ActionLink("Szerző neve", "Index", new { sortOrder = ViewBag.NameSort, currentfilter = ViewBag.CurrentFilter, pagesize = ViewBag.PageSize })
+
+        </th>
+        <th>
+            @Html.ActionLink("Active-e", "Index", new { sortOrder = ViewBag.ActiveSort, currentfilter = ViewBag.CurrentFilter, pagesize = ViewBag.PageSize })
+        </th>
+        <th>
+            Találatok:
+            @using (Html.BeginForm("Index", "Authors", FormMethod.Get))
+            {
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                @Html.Hidden("sortorder", ViewBag.CoverName as string)
+            }
+            db/oldal
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.EditorFor(modelitem => item.IsDeleted, new { id = item.ID })
+            </td>
+
+            <td align="center">
+                @Html.DisplayFor(modelItem => item.AuthorName)
+            </td>
+            <td align="center">
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                <button>@Html.ActionLink("Edit", "Edit", new { id = item.ID })</button>
+
+            </td>
+        </tr>
+
+    }
+
+
+</table>
+<p>Kijelöltek: <span id="results"></span></p>
+<br />
+@*@if (count > pagesizelist.)
+    {*@
+<div class="container">
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, pagesize = ViewBag.PageSize }))
+</div>
+@*}*@
+
+<div class="container">
+
+    <button class="btn btn-default col-xs-offset-2 col-xs-2">@Html.ActionLink("Create New", "Create")</button>
+
+    @*<button id="DeleteBtn" class="btn btn-danger col-xs-offset-4 col-xs-2">Törlés</button>*@
+
+    @*<button class="btn btn-default col-xs-offset-2 col-xs-2">@Html.ActionLink("Törlés", "DeleteConfirmed", @Model)</button>*@
+    <button class="btn btn-default col-xs-offset-2 col-xs-2">@Html.ActionLink("Törlés", "DeleteConfirmed", "Delete", Model)</button>
+
+</div>
+@*}*@
+@section scripts{
+    <script>
+        //$(document).ready(function () {
+        //    $("list").on("click", function (event) {
+        //       ViewBag.listSize= document.getElemetnById("list").value;
+        //    });
+
+
+        //});
+        $('#pagesizelist').on('change', function (event) {
+            var form = $(event.target).parents('form');
+            form.submit();
+        });
+
+        //function showValues() {
+        //    var fields = $(":input[name=DeleteSelectedChkbx]:checked").serializeArray();
+        //    var results = new Array();
+        //    //$("#checkedDelete").empty();
+        //    //jQuery.each(fields, function (i, field) {
+        //    //    $("#checkedDelete").append(field.value + ";");
+        //    jQuery.each(fields, function (i,field)){
+        //        var item = field.value;
+        //        results.push(item);
+        //    });
+        //    alert(results);
+
+        //    $("#DeleteBtn").on('click', function(){
+        //        $.ajax({
+        //            url: '/Authors/DeleteConfirmed',
+        //            type: 'Post',
+        //            datatype: 'json',
+        //            data: $.toJSon(results),
+        //            contentType: 'application/json; charset=utf-8',
+        //            success: function(result) {
+        //                alert(result.Result);
+        //        });
+        //    });
+        //}
+
+        //$(":checkbox").click(showValues);
+        //showValues();
+
+        //$("#DeleteBtn").on('click', function (event) {
+        //    var form = $(event.target).parent('form');
+        //    form.submit();
+        //});
+
+        //$("#DeleteSelectedChkbx").click(function () {
+        //    var checkboxSelection = "";
+        //    var selected = $("[type=checkbox]:checked").map(function () {
+        //        checkboxSelection = "Selected";
+        //        return this.id;
+        //    }).get();
+
+        //    if(selected != null || selected != undefined){
+        //        var r = confirm("The selected group(s) will be deleted. Do you want to continue?");
+        //        if (r == true) {
+        //            var selectedIds = selected.join(";");
+        //            var serviceURL = '/Authors/Delete';
+        //            $.ajax({
+        //                type: 'Post',
+        //                cache: false,
+        //                url: serviceURL,
+        //                data: { selectedIds: selectedIds },
+        //                dataType: "json",
+        //                success: function (data) {
+        //                    alert("delete success");
+        //                }
+        //            });
+        //        }
+        //    }
+
+
+        // window.location.href = '/Authors/index';
+        //});
+
+
+    </script>
+}

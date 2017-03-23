@@ -25,6 +25,11 @@ textarea {
 th {
     text-align:center;
 }
+#logoffbutton {
+    padding-right: 25px;
+}
+
+
 #sidebar {
     padding-top: 75px;
     background: #2a2c36;

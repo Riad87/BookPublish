@@ -2,10 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using bookPublishDB;
+using System.ComponentModel.DataAnnotations;
+
 namespace BookPublish_WebApp.Models
 {
     public class PartnersViewModel
     {
+        [Required(ErrorMessage ="Név megadása kötelező")]
+        public string Name { get; set; }
+        
+        public bool Active { get; set; }
+
         public string ActiveSort { get; internal set; }
 
         public List<Partner> Partners { get; set; }

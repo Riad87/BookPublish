@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace BookPublish_WebApp.Models
 {
@@ -47,11 +50,10 @@ namespace BookPublish_WebApp.Models
     }
 
     public class LoginViewModel
-    {
+    {     
         [Required]
-        [Display(Name = "Email")]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Display(Name = "Felhasználónév")]
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -70,6 +72,10 @@ namespace BookPublish_WebApp.Models
         public string Email { get; set; }
 
         [Required]
+        [Display(Name ="Felhasználónév")]
+        public string UserName { get; set; }
+
+        [Required]
         [StringLength(100, ErrorMessage = "A jelszó {0} legalább {2} karakter hosszúnak kell lennie.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Jelszó")]
@@ -83,10 +89,14 @@ namespace BookPublish_WebApp.Models
 
     public class ResetPasswordViewModel
     {
-        [Required]
+        
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+
+        [Required]
+        [Display(Name = "Felhasználónév")]
+        public string UserName { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "A jelszó {0} legalább {2} karakter hosszúnak kell lennie.", MinimumLength = 6)]
@@ -108,5 +118,50 @@ namespace BookPublish_WebApp.Models
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+    }
+
+    public class RoleViewModel
+    {
+        [Display(Name ="Szerepkör neve")]
+        [Required(ErrorMessage = "Role nevének megadása kötelező!")]
+        public string RoleName { get; set; }
+
+        public bool isDeleted { get; set; }
+
+        public string ID { get; set; }
+
+        public List<IdentityRole> Roles { get; set; }
+
+        public List<ApplicationUser> Users { get; set; }
+
+        public int AllUserCount { get; set; }        
+
+        public string CurrentFilter { get; internal set; }
+
+        public string NameSort { get; internal set; }        
+
+        public int PageSize { get; set; }
+
+        public string SortOrder { get; set; }
+
+        public List<object> PagerList
+        {
+            get
+            {
+                return new object[AllUserCount].ToList();
+            }
+        }
+
+        public int PageCount
+        {
+            get
+            {
+                return (int)(Math.Ceiling((float)(AllUserCount) / (float)PageSize));
+            }
+        }
+
+        public int PageNumber { get; set; }
+
+        public string CurrentSort { get; set; }
     }
 }

@@ -1,0 +1,69 @@
+﻿@model BookPublish_WebApp.Models.PressuresViewModel
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <ul id="errormessage" name="errormessage"></ul>
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.ID)
+
+            <div class="form-group">
+                @Html.Label("Könyv címe", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.SelectedBookID, Model.AllBooks, "Válassz könyvet", new { @class = "form-control" })
+                    @*@Html.ValidationMessageFor(model => model.Book, "", new { @class = "text-danger" })*@
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Nyomda neve", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.SelectedPressID, Model.AllPresses, "Válassz nyomdát", new { @class = "form-control" })
+                    @*@Html.ValidationMessageFor(model => model.Press, "", new { @class = "text-danger" })*@
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Tárolás helye", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.SelecetdDepotID, Model.AllDepots, "Válassz raktárt", new { @class = "form-control" })
+                    @*@Html.ValidationMessageFor(model => model.S, "", new { @class = "text-danger" })*@
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Rendelés dátuma", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.OrderDate, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.OrderDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Utányomás száma", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.AfterPressure, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.AfterPressure, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                </div>
+            </div>    
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-primary">@Html.ActionLink("Mentés", "Edit", "Pressure", new { id = String.Empty }, new { id = "btn-edit-submit" })</button>
+        <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
+    </div>
+}
+
+

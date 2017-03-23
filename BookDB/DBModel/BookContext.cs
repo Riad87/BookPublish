@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookDB.DBModel;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace bookPublishDB
         public DbSet<Stockist_margin> Stockist_margins { get; set; }
         public DbSet<Theme> Themes { get; set; }
         public DbSet<AccountType> AccountTypes { get; set; }
+        public DbSet<Logs> Logs { get; set; }
         
 
     }

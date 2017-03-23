@@ -83,10 +83,15 @@ namespace BookPublish_WebApp.Controllers
 
             var depots = _db.Depots
                          .Where(d => d.Deleted != true)
-                         .Include(t => t.Type);
-                        
+                         .Include(t => t.Type)
+                         .Include(p => p.Partner);
 
             model.AllDepotsCount = depots.Count();
+
+            model.AllPartner = new SelectList(_db.Partners.Where(p => p.Deleted != true), "ID", "Name", 0);
+
+            model.AllTypes = new SelectList(_db.Depot_types.Where(d => d.Deleted != true), "ID", "Type", 0);
+
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -161,31 +166,61 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "ID,City,Address,Zip")] Depot depot)
+        public ActionResult Create([Bind(Include = "DepotName,SelectedPartnerID,SelectedTypeID,City,Address,Zip")] DepotsViewModel viewModel)
         {
+            Depot depot = new Depot();
+
+            depot.Address = viewModel.Address;
+            depot.City = viewModel.City;
+            depot.Depot_Name = viewModel.DepotName;
+            depot.Zip = viewModel.Zip.ToString();
+            depot.Partner = _db.Partners.Find(viewModel.SelectedPartnerID);
+            depot.Type = _db.Depot_types.Find(viewModel.SelectedTypeID);
+
             if (ModelState.IsValid)
             {
                 _db.Depots.Add(depot);
-                await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                _db.SaveChanges();
+                return Json(new { success = true });
             }
 
-            return View(depot);
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.DenyGet);
         }
 
         // GET: Depots/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Depot depot = await _db.Depots.FindAsync(id);
+            var depot = _db.Depots
+                          .Where(d => d.ID == id)
+                          .Include(t => t.Type)
+                          .Include(p => p.Partner).FirstOrDefault();
+
+            int selectedTypeId = depot.Type == null ? 0 : depot.Type.ID;
+            int selectedPartnerId = depot.Partner == null ? 0 : depot.Partner.ID;
+
+            var depotview = new DepotsViewModel();
+
+            depotview.ID = depot.ID;
+            depotview.City = depot.City;
+            depotview.DepotName = depot.Depot_Name;
+            depotview.Address = depot.Address;
+            depotview.Zip = int.Parse(depot.Zip);
+            depotview.SelectedTypeID = selectedTypeId;
+            depotview.SelectedPartnerID = selectedPartnerId;
+
+            depotview.AllTypes = new SelectList(_db.Depot_types, "ID", "Type", selectedTypeId);
+
+            depotview.AllPartner = new SelectList(_db.Partners, "ID", "Name", selectedPartnerId);
+
             if (depot == null)
             {
                 return HttpNotFound();
             }
-            return View(depot);
+            return PartialView("_partialEdit", depotview);
         }
 
         // POST: Depots/Edit/5
@@ -193,15 +228,28 @@ namespace BookPublish_WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ID,City,Address,Zip")] Depot depot)
+        public async Task<ActionResult> Edit([Bind(Include = "ID,City,DepotName,Address,Zip,SelectedTypeID, SelectedPartnerID")] DepotsViewModel viewModel)
         {
+            Depot depotfromdb = _db.Depots.Find(viewModel.ID); // lekérdezem az eredeti objektumot az adatbázisból, ezzen fogja érzékelni az EF a navigációs property változását.
+
+            depotfromdb.ID = viewModel.ID;
+            depotfromdb.Depot_Name = viewModel.DepotName;
+            depotfromdb.Address = viewModel.Address;
+            depotfromdb.City = viewModel.City;
+            depotfromdb.Zip = viewModel.Zip.ToString();
+            depotfromdb.Partner = _db.Partners.Find(viewModel.SelectedPartnerID);
+            depotfromdb.Type = _db.Depot_types.Find(viewModel.SelectedTypeID);
+
             if (ModelState.IsValid)
             {
-                _db.Entry(depot).State = EntityState.Modified;
+                //_db.Entry(depotfromdb).State = EntityState.Modified; // nem alkalmas navigation property mentésére, csak skaláris értékek mentésére.
+                
+                _db.Configuration.AutoDetectChangesEnabled = true; // ezért használom ezt a megoldást, hogy a befrissítse az EF a változó navigációs property-t
                 await _db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                return Json(new { success = true });
             }
-            return View(depot);
+
+            return Json(new { success = false, errors = GetModelStateErrors(ModelState) }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Depots/Delete/5
@@ -237,6 +285,23 @@ namespace BookPublish_WebApp.Controllers
                 _db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public List<string> GetModelStateErrors(ModelStateDictionary ModelState)
+        {
+            List<string> errorMessages = new List<string>();
+
+            var validationErrors = ModelState.Values.Select(x => x.Errors);
+            validationErrors.ToList().ForEach(ve =>
+            {
+                var errorStrings = ve.Select(x => x.ErrorMessage);
+                errorStrings.ToList().ForEach(em =>
+                {
+                    errorMessages.Add(em);
+                });
+            });
+
+            return errorMessages;
         }
     }
 }
