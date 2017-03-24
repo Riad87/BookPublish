@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+}
+
+
+<div class="top-content">
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3 form-box">
+            <div class="form-top">
+                <div class="form-top-left">
+                    <h3>Hozzáférés megtagadva!</h3>
+                    <p>Nincs jogosultsága az alábbi oldal megtekintéséhez!</p>
+                </div>
+                <div class="form-top-right">
+                    <i class="fa fa-key"></i>
+                </div>
+            </div>
+            <div class="form-bottom" id="login">
+
+                <section id="loginForm">
+                    <button class="btn btn-table">@Html.ActionLink("Vissza a kezdőoldalra", "Index","Home") </button>
+                </section>
+            </div>
+
+        </div>
+    </div>
+</div>
