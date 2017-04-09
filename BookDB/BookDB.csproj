@@ -54,16 +54,14 @@
     <Compile Include="DBModel\AccountType.cs" />
     <Compile Include="DBModel\Author.cs" />
     <Compile Include="DBModel\BookContext.cs" />
-    <Compile Include="DBModel\BookPublishRepository.cs" />
     <Compile Include="DBModel\BookRepository.cs" />
     <Compile Include="DBModel\Books.cs" />
     <Compile Include="DBModel\Cover.cs" />
     <Compile Include="DBModel\Depot.cs" />
     <Compile Include="DBModel\Depot_type.cs" />
-    <Compile Include="DBModel\HomeRepository.cs" />
-    <Compile Include="DBModel\IBookPublishContext.cs" />
     <Compile Include="DBModel\Logs.cs" />
     <Compile Include="DBModel\Partner.cs" />
+    <Compile Include="DBModel\PayOff.cs" />
     <Compile Include="DBModel\Press.cs" />
     <Compile Include="DBModel\Pressure.cs" />
     <Compile Include="DBModel\Stockist_margin.cs" />
@@ -200,6 +198,10 @@
     <Compile Include="Migrations\201703131612145_logtableaction.Designer.cs">
       <DependentUpon>201703131612145_logtableaction.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704091549595_payoff.cs" />
+    <Compile Include="Migrations\201704091549595_payoff.Designer.cs">
+      <DependentUpon>201704091549595_payoff.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -309,6 +311,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703131612145_logtableaction.resx">
       <DependentUpon>201703131612145_logtableaction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704091549595_payoff.resx">
+      <DependentUpon>201704091549595_payoff.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

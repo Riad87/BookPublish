@@ -24,7 +24,8 @@ namespace bookPublishDB
         public DbSet<Theme> Themes { get; set; }
         public DbSet<AccountType> AccountTypes { get; set; }
         public DbSet<Logs> Logs { get; set; }
-        
+        public DbSet<PayOff> PayOffs { get; set; }
+
 
     }
 }

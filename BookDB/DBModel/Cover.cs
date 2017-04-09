@@ -7,7 +7,11 @@ namespace bookPublishDB
     public class Cover
     {
         public int ID { get; set; }
+
+        [Display(Name = "Borító neve")]
         public string CoverName { get; set; }
+
+        [Display(Name = "Aktív-e")]
         public bool Active { get; set; }
         public bool Deleted { get; set; }
 

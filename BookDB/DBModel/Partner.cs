@@ -16,9 +16,13 @@ namespace bookPublishDB
 
         public int ID { get; set; }
 
+        [Display(Name = "Partner neve")]
         [Required(ErrorMessage = "Név megadása kötelező")]
         public string Name { get; set; }
+
         public List<Depot> Depot { get; set; }
+
+        [Display(Name = "Aktív-e")]
         public bool Active { get; set; }
         public bool Deleted { get; set; }
 
