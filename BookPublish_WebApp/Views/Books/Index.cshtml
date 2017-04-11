@@ -5,120 +5,126 @@
     ViewBag.Title = "Könyvek";
 
 }
+<div id="nifty">
 
-@using (Html.BeginForm("Index","Books",FormMethod.Post))
-{
-    @Html.HiddenFor(m => m.NameSort)
-    @Html.HiddenFor(m => m.CurrentFilter)
-    @Html.HiddenFor(m => m.SortOrder)
+    <h2>@ViewBag.Title</h2>
 
-    <div class="container-fluid">
-        <p>@Html.TextBox("searchString") <input class="col-xs-offset-3 col-xs-2" type="submit" value="Keresés" /></p>
-    </div>
+    @using (Html.BeginForm("Index", "Books", FormMethod.Post))
+    {
+        @Html.HiddenFor(m => m.NameSort)
+        @Html.HiddenFor(m => m.CurrentFilter)
+        @Html.HiddenFor(m => m.SortOrder)
 
-    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
-        <tr>
-            <th>
-                #
-            </th>
-            <th align="center">
-                @Html.ActionLink("Azonosító", "Index", new { sortOrder = Model.ItemNumSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("ISBN", "Index", new { sortOrder = Model.ISBNSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Szerző", "Index", new { sortOrder = Model.AuthorNameSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Könyv neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Borító típusa", "Index", new { sortOrder = Model.CoverTypeSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Könyv témája", "Index", new { sortOrder = Model.ThemeTypeSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Nettó ár", "Index", new { sortOrder = Model.NetValueSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Áfa", "Index", new { sortOrder = Model.VatSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Bruttó ár", "Index", new { sortOrder = Model.GrossValueSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Érvényes -tól", "Index", new { sortOrder = Model.ValidFromSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="center">
-                @Html.ActionLink("Érvényes -ig", "Index", new { sortOrder = Model.ValidToSort, currentfilter = Model.CurrentFilter })
-            </th>
-            <th align="right">
-                Találatok:
-                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
-                db/oldal
+        <div class="right-inner-addon">
+            <i class="icon-search"></i>
+            @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Keresés" })
+        </div>
 
-            </th>
-        </tr>
-
-        @for (int i = 0; i < Model.Books.Count; i++)
-        {
+        <table class="table table-hover table-responsive table-condensed" border="0">
             <tr>
-                <td>
-                    @Html.HiddenFor(model => model.Books[i].ID)
-                    @Html.HiddenFor(model => model.Books[i].ISBN)
-                    @Html.HiddenFor(model => model.Books[i].Author)
-                    @Html.HiddenFor(model => model.Books[i].Name)
-                    @Html.HiddenFor(model => model.Books[i].NetValue)
-                    @Html.HiddenFor(model => model.Books[i].Vat)
-                    @Html.HiddenFor(model => model.Books[i].GrossValue)
-                    @Html.HiddenFor(model => model.Books[i].ValidFrom)
-                    @Html.HiddenFor(model => model.Books[i].ValidTo)
+                <th>
+                    #
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Azonosító", "Index", new { sortOrder = Model.ItemNumSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("ISBN", "Index", new { sortOrder = Model.ISBNSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Szerző", "Index", new { sortOrder = Model.AuthorNameSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Könyv neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Borító típusa", "Index", new { sortOrder = Model.CoverTypeSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Könyv témája", "Index", new { sortOrder = Model.ThemeTypeSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Nettó ár", "Index", new { sortOrder = Model.NetValueSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Áfa", "Index", new { sortOrder = Model.VatSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Bruttó ár", "Index", new { sortOrder = Model.GrossValueSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Érvényes -tól", "Index", new { sortOrder = Model.ValidFromSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="center">
+                    @Html.ActionLink("Érvényes -ig", "Index", new { sortOrder = Model.ValidToSort, currentfilter = Model.CurrentFilter })
+                </th>
+                <th align="right">
+                    Találatok:
+                    @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                    db/oldal
 
-                    @Html.EditorFor(model => model.Books[i].IsDeleted)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].ItemNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].ISBN)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].Author.AuthorName)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].Cover.CoverName)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].Theme.ThemeName)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].NetValue) Ft
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].Vat)%
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].GrossValue) Ft 
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].ValidFrom)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.Books[i].ValidTo)
-                </td>
-                <td>
-                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Books[i].ID }, new {@class= "editbutton" }) </button>
-
-                </td>
+                </th>
             </tr>
-        }
 
-    </table>
+            @for (int i = 0; i < Model.Books.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.HiddenFor(model => model.Books[i].ID)
+                        @Html.HiddenFor(model => model.Books[i].ISBN)
+                        @Html.HiddenFor(model => model.Books[i].Author)
+                        @Html.HiddenFor(model => model.Books[i].Name)
+                        @Html.HiddenFor(model => model.Books[i].NetValue)
+                        @Html.HiddenFor(model => model.Books[i].Vat)
+                        @Html.HiddenFor(model => model.Books[i].GrossValue)
+                        @Html.HiddenFor(model => model.Books[i].ValidFrom)
+                        @Html.HiddenFor(model => model.Books[i].ValidTo)
+
+                        @Html.EditorFor(model => model.Books[i].IsDeleted)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].ItemNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].ISBN)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Author.AuthorName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Cover.CoverName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Theme.ThemeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].NetValue) Ft
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].Vat)%
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].GrossValue) Ft
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].ValidFrom)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => model.Books[i].ValidTo)
+                    </td>
+                    <td>
+                        @if (this.User.IsInRole("Admin") || this.User.IsInRole("PowerUser"))
+                        {
+                            <button class="btn btn-table">@Html.ActionLink("Szerkesztés", "Edit", new { id = Model.Books[i].ID }, new { @class = "editbutton" }) </button>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>
 
         <div class="container">
             Page @Model.PageNumber of @Model.PageCount
@@ -127,12 +133,14 @@
                 page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
         </div>
 
-        <div class="container">
-            <button class="btn btn-success col-sm-2 col-sm-offset-3" data-toggle="modal" data-target="#createnewBook"><span class="glyphicon glyphicon-plus"></span>Új könyv</button>
-            <button class="btn btn-danger col-sm-offset-2 col-sm-2" data-toggle="modal" data-target=".deletedialog">Törlés</button>
+        if (this.User.IsInRole("Admin") || this.User.IsInRole("PowerUser"))
+        {
+            <div class="container">
+                <button class="btn btn-table col-sm-2 col-sm-offset-3" data-toggle="modal" data-target="#createnewBook"><span class="glyphicon glyphicon-plus"></span>Új könyv</button>
+                <button class="btn btn-table col-sm-offset-2 col-sm-2" data-toggle="modal" data-target=".deletedialog">Törlés</button>
 
-        </div>
-
+            </div>
+        }
         <div class="modal fade deletedialog">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -145,39 +153,41 @@
                     </div>
                     <div class="modal-footer">
                         <input class="btn btn-primary" type="submit" value="Törlés">
-                        <button class="btn btn-default" data-dismiss="modal">Mégsem</button>                        
+                        <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
                     </div>
                 </div>
             </div>
 
         </div>
-}
+    }
 
-<div class="modal fade" id="createnewBook" tabindex="-1" role="dialog" aria-labelledby="createnewBook" data-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <div class="modal-title">Új könyv hozzáadaása</div>
-            </div>            
+    <div class="modal fade" id="createnewBook" tabindex="-1" role="dialog" aria-labelledby="createnewBook" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Új könyv hozzáadaása</div>
+                </div>
                 @Html.Partial("_partialCreate")
-            
-            
-        </div>
 
-    </div>
-</div>
 
-<div class="modal fade" id="editor" name="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <div class="modal-title">Könyv szerkesztése</div>
             </div>
-            <div name="modaldata" id="modaldata"></div>
 
         </div>
-
     </div>
+
+    <div class="modal fade" id="editor" name="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Könyv szerkesztése</div>
+                </div>
+                <div name="modaldata" id="modaldata"></div>
+
+            </div>
+
+        </div>
+    </div>
+
 </div>

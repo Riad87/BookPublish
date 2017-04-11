@@ -13,25 +13,30 @@ namespace BookPublish_WebApp.Models
 
         public int ID { get; set; }
 
+        [Display(Name = "Könyv neve")]
         [Required(ErrorMessage = "Könyv kiválasztása kötelező!")]
         public int SelectedBookID { get; set; }
        
         public SelectList AllPresses { get; set; }
 
+        [Display(Name = "Nyomda")]
         [Required(ErrorMessage = "Nyomda kiválasztása kötelező!")]
         public int SelectedPressID { get; set; }
         
         public SelectList AllDepots { get; set; }
 
+        [Display(Name = "Raktár")]
         [Required(ErrorMessage = "Raktár megadása kötelező!")]
         public int SelecetdDepotID { get; set; }
 
         public int AfterPressure { get; set; }
 
+        [Display(Name = "Megrendelés dátuma")]
         [DataType(DataType.Date)]
         [Required(ErrorMessage ="Rendelés dátumának megadása kötelező!")]
         public DateTime OrderDate { get; set; }
 
+        [Display(Name = "Mennyiség")]
         [Required(ErrorMessage ="Mennyiség megadása kötelező!")]
         public int Quantity { get; set; }
 

@@ -34,7 +34,7 @@ window.onload = function () {
         return;
     Rounded("#login", "all", "#4A44A4", "#1C5D99", "smooth");
     Rounded("div#nifty", "all", "#4A44A4", "#1C5D99", "smooth");
-    Rounded("div#niftyfooter", "all", "#4A44A4", "#1C5D99", "smooth");
+    Rounded("div#niftyfooter", "all", "#4A44A4", "#1C5D99", "smooth");    
 }
 
 $(document).ready(function () {
@@ -180,7 +180,7 @@ $(document).on('click', '#btn-changepwd-submit', function (e) {
     });
 });
 function displayValidationErrors(errors) {
-      
+
     $.each(errors, function (idx, errorMessage) {
         var li = $('<li>').text(errorMessage).appendTo('#errormessage');
     });

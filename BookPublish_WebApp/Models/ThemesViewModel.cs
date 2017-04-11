@@ -9,8 +9,10 @@ namespace BookPublish_WebApp.Models
 {
     public class ThemesViewModel
     {
+        [Display(Name = "Aktív-e")]
         public bool Active { get; set; }
 
+        [Display(Name = "Téma")]
         [Required(ErrorMessage ="Név megadása kötelező!")]
         public string ThemeName { get; set; }
 

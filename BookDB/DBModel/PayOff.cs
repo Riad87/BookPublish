@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookDB.DBModel
+namespace bookPublishDB
 {
     public class PayOff
     {

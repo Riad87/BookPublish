@@ -14,8 +14,9 @@
         @Html.HiddenFor(m => m.CurrentFilter)
         @Html.HiddenFor(m => m.SortOrder)
 
-        <div>
-            @Html.TextBox("searchString", "Keresés", new { @class = "searchstring" }) <button class="col-xs-offset-6 col-xs-2 btn btn-table" type="submit">Keresés</button>
+        <div class="right-inner-addon">
+            <i class="icon-search"></i>
+            @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Keresés" })
         </div>
 
         <table class="table table-hover table-responsive table-condensed" border="0">
@@ -25,7 +26,8 @@
                 </th>
                 <th align="center">
                     @Html.ActionLink("E-mail cím", "Index", "UserManager", new { sortOrder = Model.EmailSort, currentfilter = Model.CurrentFilter }, null)
-                </th>                
+                </th>
+                <th></th>
                 <th align="right">
                     Találatok:
                     @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })

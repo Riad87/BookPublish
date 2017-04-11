@@ -11,8 +11,9 @@
     @using (Html.BeginForm("Index", "RoleManagement"))
     {
 
-        <div>
-            @Html.TextBox("searchString", "Keresés", new { @class = "searchstring" }) <button class="col-xs-offset-6 col-xs-2 btn btn-table" type="submit">Keresés</button>
+        <div class="right-inner-addon">
+            <i class="icon-search"></i>
+            @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Keresés" })
         </div>
 
 

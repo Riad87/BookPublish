@@ -7,33 +7,29 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookPublish_WebApp.Models
 {
-    public class CoversViewModel
+    public class PayOffViewModel
     {
-        [Display(Name = "Borító név")]
-        [Required(ErrorMessage ="Név megadása kötelező!")]
-        public string CoverName { get; set; }
+        public string ISBNSort { get; internal set; }
 
-        [Display(Name = "Aktív-e")]
-        [Required]
-        public bool Active { get; set; }
+        public List<PayOff> PayOffs { get; set; }
 
-        public string ActiveSort { get; internal set; }
-
-        public List<Cover> Covers { get; set; }
-
-        public int AllCoversCount { get; set; }
-
+        public int AllPayoffsCount { get; set; }
+            
         public List<object> PagerList
         {
             get
             {
-                return new object[AllCoversCount].ToList();
+                return new object[AllPayoffsCount].ToList();
             }
         }
 
         public string CurrentFilter { get; internal set; }
 
-        public string CoverSort { get; internal set; }
+        public string NameSort { get; internal set; }
+
+        public string QuantitySort { get; set; }
+
+        public string PriceSort { get; set; }
 
         public int PageSize { get; set; }
 
@@ -43,7 +39,7 @@ namespace BookPublish_WebApp.Models
         {
             get
             {
-                return (int)(Math.Ceiling((float)(AllCoversCount) / (float)PageSize));
+                return (int)(Math.Ceiling((float)(AllPayoffsCount) / (float)PageSize));
             }
         }
 

@@ -1,0 +1,66 @@
+﻿@model BookPublish_WebApp.Models.PayOffViewModel
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Elszámolások";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="nifty">
+    <h2>@ViewBag.Title</h2>
+
+    <div class="right-inner-addon">
+        <i class="icon-search"></i>
+        @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Keresés" })
+    </div>
+
+    <table class="table table-hover table-responsive table-condensed" border="0">
+        <tr>
+            <th align="center">
+                @Html.ActionLink("ISBN", "Index", new { sortOrder = Model.ISBNSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Könyv címe", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Mennyiség", "Index", new { sortOrder = Model.QuantitySort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th align="center">
+                @Html.ActionLink("Ár", "Index", new { sortOrder = Model.PriceSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+            </th>
+            <th align="right">
+                Találatok:
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                db/oldal
+            </th>
+        </tr>
+
+        @foreach (var item in Model.PayOffs)
+        {
+            <tr>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => item.ISBN)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td align="center">
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td align="right"></td>
+            </tr>
+        }
+
+    </table>
+
+    <div class="container">
+        Page @Model.PageNumber of @Model.PageCount
+
+        @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
+    </div>
+
+</div>

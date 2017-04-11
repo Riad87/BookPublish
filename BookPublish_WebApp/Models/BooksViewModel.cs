@@ -14,12 +14,15 @@ namespace BookPublish_WebApp.Models
 
         public List<Books> Books { get; set; }
 
+        [Display(Name = "Szerző")]
         [Required(ErrorMessage ="Szerző kiválasztása kötelező!")]
         public int SelectedAuthorID { get; set; }
 
+        [Display(Name = "Borító típus")]
         [Required(ErrorMessage ="Borító kiválasztása kötelező!")]
         public int SelectedCoverID { get; set; }
 
+        [Display(Name = "Téma")]
         [Required(ErrorMessage ="Téma kiválasztása kötelező!")]
         public int SelectedThemeID { get; set; }
 
@@ -45,6 +48,7 @@ namespace BookPublish_WebApp.Models
 
         public string NameSort { get; internal set; }
 
+        [Display(Name = "Könyv címe")]
         [Required(ErrorMessage ="Könyv címének kitöltése kötelező!")]
         public string Name { get; set; }
 
@@ -54,19 +58,23 @@ namespace BookPublish_WebApp.Models
 
         public string ISBNSort { get; set; }
 
+
         [Required(ErrorMessage ="ISBN megadása kötelező!")]
         public string ISBN { get; set; }
 
         public string ItemNumSort { get; set; }
 
+        [Display(Name = "Egyed azonosító")]
         public int ItemNumber { get; set; }
 
         public string NetValueSort { get; set; }
 
+        [Display(Name = "Nettó ár")]
         public int NetValue { get; set; }
 
         public string VatSort { get; set; }
 
+        [Display(Name = "Adó mértéke %")]
         public int Vat { get; set; }
 
         public string GrossValueSort { get; set; }
@@ -87,12 +95,14 @@ namespace BookPublish_WebApp.Models
 
         public string ValidFromSort { get; set; }
 
+        [Display(Name = "Érvényesség kezdete")]
         [Required(ErrorMessage ="Érvényesség kezdete kötelező!")]
         [DataType(DataType.Date)]
         public DateTime ValidFrom { get; set; }
        
         public string ValidToSort { get; set; }
 
+        [Display(Name = "Érvényesség vége")]
         [Required(ErrorMessage ="Érvényesség vége kötelező!")]
         [DataType(DataType.Date)]
         public DateTime ValidTo { get; set; }

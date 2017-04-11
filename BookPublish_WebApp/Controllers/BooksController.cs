@@ -33,28 +33,12 @@ namespace BookPublish_WebApp.Controllers
             {
                 if (book.IsDeleted == true)
                 {
-                    try
-                    {
-                        Books b = _db.Books
-                                       .Where(x => x.ID == book.ID)
-                                       .Include(a => a.Author).First();
+                    Books b = _db.Books
+                                   .Where(x => x.ID == book.ID)
+                                   .Include(a => a.Author).First();
 
-                        b.Deleted = true;
-                        _db.SaveChanges();
-                    }
-
-                    catch (DbEntityValidationException dbEx)
-                    {
-                        foreach (var validationErrors in dbEx.EntityValidationErrors)
-                        {
-                            foreach (var validationError in validationErrors.ValidationErrors)
-                            {
-                                Trace.TraceInformation("Property: {0} Error: {1}",
-                                                        validationError.PropertyName,
-                                                        validationError.ErrorMessage);
-                            }
-                        }
-                    }
+                    b.Deleted = true;
+                    _db.SaveChanges();
                 }
             }
 

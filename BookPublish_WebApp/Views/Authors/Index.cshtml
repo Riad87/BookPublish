@@ -4,119 +4,126 @@
     ViewBag.Title = "Szerzők";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div id="nifty">
+    <h2>Szerzők</h2>
 
-<h2>Szerzők</h2>
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(m => m.NameSort)
+        @Html.HiddenFor(m => m.CurrentFilter)
+        @Html.HiddenFor(m => m.SortOrder)
 
-@using (Html.BeginForm())
-{
-    @Html.HiddenFor(m => m.NameSort)
-    @Html.HiddenFor(m => m.CurrentFilter)
-    @Html.HiddenFor(m => m.SortOrder)
+        <div class="right-inner-addon">
+            <i class="icon-search"></i>
+            @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Keresés" })
+        </div>
 
-    <div class="container-fluid">
-        @Html.Label("Keresés: ")
-        @Html.TextBox("SearchString")
-    </div>
-    <table class="table table-striped table-hover table-responsive table-condensed" border="0">
-        <tr>
-            <th> # </th>
-            <th>
-                @Html.ActionLink("Szerző neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
-            </th>
-            <th>
-                @Html.ActionLink("Aktív-e", "Index", new { sortOrder = Model.ActiveSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
-            </th>
-            <th>
-                Találatok:
-                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
-                db/oldal
-            </th>
-        </tr>
-
-
-        @for (int i = 0; i < Model.Authors.Count; i++)
-        {
+        <table class="table table-hover table-responsive table-condensed" border="0">
             <tr>
-                <td>
-                    @Html.HiddenFor(model => model.Authors[i].ID)
-                    @Html.HiddenFor(model => model.Authors[i].AuthorName)
-                    @Html.HiddenFor(model => model.Authors[i].Active)
-                    @Html.EditorFor(model => model.Authors[i].IsDeleted)
-                </td>
-
-                <td align="center">
-                    @Html.DisplayFor(modelItem => Model.Authors[i].AuthorName)
-                </td>
-                <td align="center">
-                    @Html.DisplayFor(modelItem => Model.Authors[i].Active)
-                </td>
-                <td>
-                    <button>@Html.ActionLink("Edit", "Edit", new { id = Model.Authors[i].ID }, new {@class="editbutton" })</button>
-
-                </td>
+                <th> # </th>
+                <th>
+                    @Html.ActionLink("Szerző neve", "Index", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+                </th>
+                <th>
+                    @Html.ActionLink("Aktív-e", "Index", new { sortOrder = Model.ActiveSort, currentfilter = Model.CurrentFilter, pagesize = Model.PageSize })
+                </th>
+                <th>
+                    Találatok:
+                    @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "2", 2 }, { "5", 5 }, { "10", 10 } }, "Key", "Value", 10), new { id = "pagesizelist" })
+                    db/oldal
+                </th>
             </tr>
-        }
 
-    </table>
 
-    <div class="container">
-        Page @Model.PageNumber of @Model.PageCount
+            @for (int i = 0; i < Model.Authors.Count; i++)
+            {
+                <tr>
+                    <td>
+                        @Html.HiddenFor(model => model.Authors[i].ID)
+                        @Html.HiddenFor(model => model.Authors[i].AuthorName)
+                        @Html.HiddenFor(model => model.Authors[i].Active)
+                        @Html.EditorFor(model => model.Authors[i].IsDeleted)
+                    </td>
 
-        @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
+                    <td align="center">
+                        @Html.DisplayFor(modelItem => Model.Authors[i].AuthorName)
+                    </td>
+                    <td align="center">
+                        @Html.DisplayFor(modelItem => Model.Authors[i].Active)
+                    </td>
+                    <td>
+                        @if (this.User.IsInRole("Admin") || this.User.IsInRole("PowerUser"))
+                        {
+                            <button class="btn btn-table">@Html.ActionLink("Szerkesztés", "Edit", new { id = Model.Authors[i].ID }, new { @class = "editbutton" })</button>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+        <div class="container">
+            Page @Model.PageNumber of @Model.PageCount
+
+            @Html.PagedListPager(new PagedList.PagedList<object>(Model.PagerList.AsQueryable(), Model.PageNumber, Model.PageSize),
                 page => Url.Action("Index", new { page, sortOrder = Model.CurrentSort, currentFilter = Model.CurrentFilter, pagesize = Model.PageSize }))
-    </div>
-    <div class="container">
-        <button class="btn btn-success col-sm-2 col-sm-offset-3" data-toggle="modal" data-target="#createnewAuthor"><span class="glyphicon glyphicon-plus"></span>Új szerző</button>
-        <button class="btn btn-danger col-sm-offset-2 col-sm-2" data-toggle="modal" data-target=".deletedialog">Törlés</button>
+        </div>
 
-    </div>
+        if (this.User.IsInRole("Admin") || this.User.IsInRole("PowerUser"))
+        {
+            <div class="container">
+                <button class="btn btn-table col-sm-2 col-sm-offset-3" data-toggle="modal" data-target="#createnewAuthor"><span class="glyphicon glyphicon-plus"></span>Új szerző</button>
+                <button class="btn btn-table col-sm-offset-2 col-sm-2" data-toggle="modal" data-target=".deletedialog">Törlés</button>
 
-    <div class="modal fade deletedialog">
-        <div class="modal-dialog">
+            </div>
+        }
+        <div class="modal fade deletedialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <div class="modal-title">Törlés</div>
+                    </div>
+                    <div class="modal-body">
+                        Biztosan törölni szeretnéd a kijelölt tételeket?
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
+                        <input class="btn btn-primary" type="submit" value="Mentés">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    }
+
+    <div class="modal fade" id="createnewAuthor" tabindex="-1" role="dialog" aria-labelledby="createnewAuthor" data-backdrop="static">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <div class="modal-title">Törlés</div>
+                    <div class="modal-title">Új szerző hozzáadaása</div>
                 </div>
-                <div class="modal-body">
-                    Biztosan törölni szeretnéd a kijelölt tételeket?
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-default" data-dismiss="modal">Mégsem</button>
-                    <input class="btn btn-primary" type="submit" value="Mentés">
-                </div>
+                @Html.Partial("_partialCreate")
             </div>
-        </div>
 
+        </div>
     </div>
 
+    <div class="modal fade" id="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title">Szerző szerkesztése</div>
+                </div>
+                <div name="modaldata" id="modaldata"></div>
 
-}
-
-<div class="modal fade" id="createnewAuthor" tabindex="-1" role="dialog" aria-labelledby="createnewAuthor" data-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <div class="modal-title">Új szerző hozzáadaása</div>
             </div>
-            @Html.Partial("_partialCreate")
-        </div>
 
+        </div>
     </div>
+
 </div>
-
-<div class="modal fade" id="editor" tabindex="-1" role="dialog" aria-labelledby="editor" data-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <div class="modal-title">Szerző szerkesztése</div>
-            </div>
-            <div name="modaldata" id="modaldata"></div>
-            
-        </div>
-
-    </div>
-</div>
-

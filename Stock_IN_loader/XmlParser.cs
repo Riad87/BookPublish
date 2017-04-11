@@ -9,7 +9,7 @@ namespace Stock_IN_loader
 {
     class XmlParser
     {
-        string path;
+        private string path;
         private BookRepository _db = new BookRepository();
 
         public XmlParser(string path)
@@ -55,6 +55,7 @@ namespace Stock_IN_loader
             catch (Exception ex)
             {
                 Console.WriteLine("Hiba történt a xml feldolgozása közben: " + ex);
+                return false;
             }
 
             return true;

@@ -8,9 +8,11 @@ namespace BookPublish_WebApp.Models
 {
     public class PartnersViewModel
     {
+        [Display(Name = "Partner neve")]
         [Required(ErrorMessage ="Név megadása kötelező")]
         public string Name { get; set; }
-        
+
+        [Display(Name = "Aktív-e")]
         public bool Active { get; set; }
 
         public string ActiveSort { get; internal set; }

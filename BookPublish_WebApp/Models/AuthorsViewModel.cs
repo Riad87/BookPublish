@@ -16,9 +16,11 @@ namespace BookPublish_WebApp.Models
 
         public int AllAuthorCount { get; set; }
 
+        [Display(Name = "Szerző neve")]
         [Required(ErrorMessage ="A név megadása kötelező!")]
         public string AuthorName { get; set; }
 
+        [Display(Name = "Aktív-e")]
         public bool Active { get; set; }
 
         public List<object> PagerList

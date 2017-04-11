@@ -13,49 +13,47 @@
         @Html.HiddenFor(m => m.CurrentFilter)
         @Html.HiddenFor(m => m.SortOrder)
 
-        <div>
-        @Html.TextBox("searchString","Keresés",new {@class="searchstring" }) <button class="col-xs-offset-6 col-xs-2 btn btn-table" type="submit">Keresés</button>
+        <div class="right-inner-addon">
+            <i class="icon-search"></i>
+            @Html.TextBox("SearchString", null, new { @class = "form-control", placeholder = "Keresés" })
         </div>
 
-        
+
         <table class="table table-hover table-responsive table-condensed" border="0">
-            
+
             <tr>
-                <th>
-                    #
-                </th>
                 <th align="center">
                     @Html.ActionLink("Azonosító", "Index", "Home", new { sortOrder = Model.ItemNumSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("ISBN", "Index", "Home", null, new { sortOrder = Model.ISBNSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("ISBN", "Index", "Home", new { sortOrder = Model.ISBNSort, currentfilter = Model.CurrentFilter, id = "isbn" }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Szerző", "Index", "Home", null, new { sortOrder = Model.AuthorNameSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Szerző", "Index", "Home", new { sortOrder = Model.AuthorNameSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Könyv neve", "Index", "Home", null, new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Könyv neve", "Index", "Home", new { sortOrder = Model.NameSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Borító típusa", "Index", "Home", null, new { sortOrder = Model.CoverTypeSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Borító típusa", "Index", "Home", new { sortOrder = Model.CoverTypeSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Könyv témája", "Index", "Home", null, new { sortOrder = Model.ThemeTypeSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Könyv témája", "Index", "Home", new { sortOrder = Model.ThemeTypeSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Nettó ár", "Index", "Home", null, new { sortOrder = Model.NetValueSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Nettó ár", "Index", "Home", new { sortOrder = Model.NetValueSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Áfa", "Index", "Home", null, new { sortOrder = Model.VatSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Áfa", "Index", "Home",  new { sortOrder = Model.VatSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Bruttó ár", "Index", "Home", null, new { sortOrder = Model.GrossValueSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Bruttó ár", "Index", "Home", new { sortOrder = Model.GrossValueSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Érvényes -tól", "Index", "Home", null, new { sortOrder = Model.ValidFromSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Érvényes -tól", "Index", "Home", new { sortOrder = Model.ValidFromSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="center">
-                    @Html.ActionLink("Érvényes -ig", "Index", "Home", null, new { sortOrder = Model.ValidToSort, currentfilter = Model.CurrentFilter })
+                    @Html.ActionLink("Érvényes -ig", "Index", "Home", new { sortOrder = Model.ValidToSort, currentfilter = Model.CurrentFilter }, null)
                 </th>
                 <th align="right">
                     Találatok:
@@ -79,9 +77,6 @@
                         @Html.HiddenFor(model => model.Books[i].ValidFrom)
                         @Html.HiddenFor(model => model.Books[i].ValidTo)
 
-                        @Html.EditorFor(model => model.Books[i].IsDeleted)
-                    </td>
-                    <td>
                         @Html.DisplayFor(model => model.Books[i].ItemNumber)
                     </td>
                     <td>
@@ -115,8 +110,11 @@
                         @Html.DisplayFor(model => model.Books[i].ValidTo)
                     </td>
                     <td>
-                        @*<button >@Html.ActionLink("Edit", "Edit", "Home", new { id = Model.Books[i].ID }) </button>*@
-                        <button class="btn btn-table">@Html.ActionLink("Megrendelések", "OrderDetail", new { id = Model.Books[i].ID }, new { @class = "orderdetail" }) </button>
+                        @if (!this.User.IsInRole("External"))
+                        {
+                            @*<button >@Html.ActionLink("Edit", "Edit", "Home", new { id = Model.Books[i].ID }) </button>*@
+                            <button class="btn btn-table">@Html.ActionLink("Megrendelések", "OrderDetail", new { id = Model.Books[i].ID }, new { @class = "orderdetail" }) </button>
+                        }
                     </td>
                 </tr>
             }

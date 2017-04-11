@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - </title>
- 
+
     @Styles.Render("~/Content/niftyCorner")
     <link href="@Styles.Url("~/Content/niftyPrint")" rel="stylesheet" type="text/css" media="print" />
     @Scripts.Render("~/bundles/nifty")
@@ -19,12 +19,22 @@
         <nav class="navbar navbar-inverse">
             <div id="container-fluid">
                 <ul class="nav navbar-nav">
-                    <li class="active">@Html.ActionLink("Kezdőlap", "Index", "Home")</li>
+                    @if (!this.User.IsInRole("External"))
+                    {
+                        <li class="active">@Html.ActionLink("Kezdőlap", "Index", "Home")</li>
+                        <li>@Html.ActionLink("Megrendelések", "Index", "Pressure")</li>
+                        <li>@Html.ActionLink("Könyvek", "Index", "Books")</li>
+                        <li>@Html.ActionLink("Elszámolások", "Index", "PayOff")</li>
+                    }
+                    else
+                    {
+                        <li class="active">@Html.ActionLink("Kezdőlap", "Index", "PayOff")</li>
+                    }
+
                     <li>@Html.ActionLink("Rólunk", "About", "Home")</li>
                     <li>@Html.ActionLink("Kapcsolat", "Contact", "Home")</li>
-                    <li>@Html.ActionLink("Szerzők", "Index", "Authors")</li>
-                    <li>@Html.ActionLink("Könyvek", "Index", "Books")</li>
-                    @if (this.User.IsInRole("Admin"))
+
+                    @if (this.User.IsInRole("Admin") || this.User.IsInRole("PowerUser"))
                     {
                         <li class="dropdown">
 
@@ -39,23 +49,27 @@
                                 <li>@Html.ActionLink("Nyomdák", "Index", "Presses")</li>
                                 <li>@Html.ActionLink("Fedél típusok", "Index", "Covers")</li>
                                 <li>@Html.ActionLink("Partnerek", "Index", "Partners")</li>
-                                <li>@Html.ActionLink("Nyomások", "Index", "Pressure")</li>
+                                <li>@Html.ActionLink("Megrendelések", "Index", "Pressure")</li>
                                 <li>@Html.ActionLink("Árrés", "Index", "Stockist_margin")</li>
                                 <li>@Html.ActionLink("Könyv témák", "Index", "Themes")</li>
-                                <li role="separator" class="divider"></li>
-                                <li>@Html.ActionLink("Felhasználó adminisztáció", "Index", "UserManager")</li>
-                                <li>@Html.ActionLink("Felhasználói szerepkörök", "Index", "RoleManager")</li>
+                                @if (this.User.IsInRole("Admin"))
+                                {
+
+                                    <li>@Html.ActionLink("Felhasználó adminisztáció", "Index", "UserManager")</li>
+                                    <li>@Html.ActionLink("Felhasználói szerepkörök", "Index", "RoleManager")</li>
+                                }
                             </ul>
 
                         </li>
 
                     }
                 </ul>
+
                 <div>@Html.Partial("_LoginPartial")</div>
 
             </div>
         </nav>
-
+    
 
     }
     <div class="container">

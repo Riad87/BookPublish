@@ -97,5 +97,15 @@ namespace bookPublishDB
                     return false;
             }
         }
+
+        public void SavePayOff(PayOff payoff)
+        {
+            using (var ctx = new BookContext())
+            {
+                ctx.PayOffs.Add(payoff);
+                ctx.SaveChanges();
+            }
+
+        }
     }
 }

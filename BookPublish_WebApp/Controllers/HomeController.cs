@@ -33,15 +33,15 @@ namespace BookPublish_WebApp.Controllers
         [HttpGet]
         public ActionResult OrderDetail(string id = null)
         {
-            var pressure = new PressureMasterDetailsModel();
-            pressure.PressureOrders = _db.Pressure
-                          .Where(x => x.Book.ID.ToString() == id).ToList();
-
             if (id == null)
             {
                 return HttpNotFound();
             }
 
+            var pressure = new PressureMasterDetailsModel();
+            pressure.PressureOrders = _db.Pressure
+                          .Where(x => x.Book.ID.ToString() == id).ToList();
+                                
             return PartialView("_partialPressures", pressure);
         }
 
@@ -503,14 +503,14 @@ namespace BookPublish_WebApp.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Könyvelést támogató alkalmazás.";
 
             return View();
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "Elérhetőségek:";
 
             return View();
         }

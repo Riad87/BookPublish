@@ -8,7 +8,7 @@ namespace BookPublish_WebApp
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(                        
+            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
@@ -29,13 +29,12 @@ namespace BookPublish_WebApp
                       "~/Scripts/bootstrap.min.js",
                       "~/Scripts/respond.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
+            bundles.Add(new StyleBundle("~/Content/css").Include(                      
                       "~/Content/bootstrap.min.css",
                       "~/Content/form-elements.css",
                       "~/Content/font-awesome.min.css",
                       "~/Content/style.css",
-                      "~/Content/PagedList.css",                     
-                      "~/Content/site.css"));
+                      "~/Content/PagedList.css"));
 
             bundles.Add(new StyleBundle("~/Content/niftyCorner").Include(
                       "~/Content/niftyCorners.css"));

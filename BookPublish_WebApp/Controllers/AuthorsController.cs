@@ -15,7 +15,7 @@ using BookPublish_WebApp.Logging;
 
 namespace BookPublish_WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Admin,User,PowerUser")]
     public class AuthorsController : Controller
     {
         private BookContext _db = new BookContext();
